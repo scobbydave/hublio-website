@@ -5,12 +5,8 @@
       "schedule": "0 6 * * *"
     },
     {
-      "path": "/api/cron/generate-social",
-      "schedule": "30 6 * * *"
-    },
-    {
       "path": "/api/cron/generate-vacancies",
-      "schedule": "0 */6 * * *"
+      "schedule": "0 18 * * *"
     }
   ],
   "functions": {
