@@ -33,11 +33,11 @@ const hubsSessions = new Map<string, HubsSession>()
 const CONTACT_INFO = {
   general: {
     email: "info@hublio.co.za",
-    phone: "+27 60 873 1659",
-    location: "Johannesburg, South Africa",
+    phone: "+27 21 555 0123",
+    location: "Cape Town, South Africa",
   },
   emergency: {
-    phone: "+27 60 873 1659",
+    phone: "+27 21 555 0123",
     description: "24/7 emergency support for critical mining operations",
   },
   office_hours: {
@@ -150,16 +150,16 @@ HUBLIO SOLUTIONS:
 - 24/7 Support: Emergency support, technical consultation, training programs
 
 📞 CONTACT INFO:
-- General: info@hublio.co.za | +27 60 873 1659
-- Emergency: +27 60 873 1659 (24/7 mining operations support)
-- Location: Johannesburg, South Africa
+- General: info@hublio.co.za | +27 21 555 0123
+- Emergency: +27 21 555 0123 (24/7 mining operations support)
+- Location: Cape Town, South Africa
 - Hours: Mon-Fri 8AM-6PM, Sat 9AM-2PM
 
 📱 SOCIAL MEDIA:
 - Instagram: @hublio_official
 - TikTok: @hublio
 - Facebook: HublioOfficial
-- WhatsApp Business: +27 60 873 1659
+- WhatsApp Business: +27 21 555 0123
 - Links: linktr.ee/Hublio
 
 � RESPONSE GUIDELINES:
@@ -422,8 +422,8 @@ Would you like me to:
 
 **Immediate Contact Options:**
 📧 info@hublio.co.za
-📞 +27 60 873 1659 (Ask for mining specialist)
-💬 WhatsApp: +27 60 873 1659
+📞 +27 21 555 0123 (Ask for mining specialist)
+💬 WhatsApp: +27 21 555 0123
 
 Our team of mining professionals will be happy to provide you with expert guidance on your specific question.`,
     metadata: {
@@ -432,8 +432,8 @@ Our team of mining professionals will be happy to provide you with expert guidan
       escalationType: "unknown_answer", 
       smartSuggestions: [
         { label: "Contact Mining Expert", action: "navigate", url: "/contact" },
-        { label: "Call Now", action: "call", url: "tel:+27608731659" },
-        { label: "WhatsApp Us", action: "external", url: "https://wa.me/27608731659" },
+        { label: "Call Now", action: "call", url: "tel:+27215550123" },
+        { label: "WhatsApp Us", action: "external", url: "https://wa.me/27215550123" },
         { label: "Email Question", action: "email", url: "mailto:info@hublio.co.za" }
       ],
       requiresFollowUp: true
@@ -570,7 +570,7 @@ function generateHubsFallbackResponse(
       metadata.pageReference = "/about"
     } else if (lowerMessage.includes("contact")) {
       response =
-        "Here's how to reach us:\n\n📧 info@hublio.co.za\n📞 +27 60 873 1659\n📍 Johannesburg, South Africa\n🚨 Emergency: +27 60 873 1659\n\nWould you like me to take you to our contact page for more details?"
+        "Here's how to reach us:\n\n📧 info@hublio.co.za\n📞 +27 21 555 0123\n📍 Cape Town, South Africa\n🚨 Emergency: +27 21 555 0123\n\nWould you like me to take you to our contact page for more details?"
       metadata.pageReference = "/contact"
     } else if (lowerMessage.includes("blog")) {
       response =
@@ -589,10 +589,10 @@ function generateHubsFallbackResponse(
       metadata.pageReference = "/services"
     } else if (lowerMessage.includes("safety")) {
       response =
-        "Safety is our top priority! Here's essential mining safety information:\n\n🛡️ **Personal Protective Equipment (PPE):**\n- Hard hat/helmet (mandatory in all mining areas)\n- Safety boots with steel toes\n- High-visibility clothing\n- Respiratory protection when needed\n- Eye and hearing protection\n\n📋 **Mine Health & Safety Act Requirements:**\n- Valid certificates of fitness for all workers\n- Regular safety training and assessments\n- Risk assessments before work begins\n- 24-hour incident reporting\n- Emergency procedures must be established\n\n⚠️ **Key Safety Practices:**\n- Check ground conditions for loose rock\n- Monitor atmospheric conditions\n- Follow lockout/tagout procedures\n- Maintain emergency communication\n- Know evacuation routes\n\nOur AI Safety Management Systems provide real-time monitoring and hazard prediction. We've helped reduce incident rates by up to 40%. For specific safety questions or technical details, I can connect you with our mining safety experts at +27 60 873 1659."
+        "Safety is our top priority! Here's essential mining safety information:\n\n🛡️ **Personal Protective Equipment (PPE):**\n- Hard hat/helmet (mandatory in all mining areas)\n- Safety boots with steel toes\n- High-visibility clothing\n- Respiratory protection when needed\n- Eye and hearing protection\n\n📋 **Mine Health & Safety Act Requirements:**\n- Valid certificates of fitness for all workers\n- Regular safety training and assessments\n- Risk assessments before work begins\n- 24-hour incident reporting\n- Emergency procedures must be established\n\n⚠️ **Key Safety Practices:**\n- Check ground conditions for loose rock\n- Monitor atmospheric conditions\n- Follow lockout/tagout procedures\n- Maintain emergency communication\n- Know evacuation routes\n\nOur AI Safety Management Systems provide real-time monitoring and hazard prediction. We've helped reduce incident rates by up to 40%. For specific safety questions or technical details, I can connect you with our mining safety experts at +27 21 555 0123."
     } else if (lowerMessage.includes("emergency") || lowerMessage.includes("accident") || lowerMessage.includes("incident")) {
       response =
-        "🚨 **Mining Emergency Procedures:**\n\n**Immediate Actions:**\n1. Ensure personal safety first\n2. Alert others in the area\n3. Contact mine rescue/emergency services\n4. Follow established evacuation procedures\n5. Report to assembly points\n\n**Emergency Contacts:**\n- Mine Rescue Services\n- Medical facilities on-site\n- Emergency coordinator\n- Hublio Emergency Support: +27 60 873 1659\n\n**Required Equipment:**\n- Self-rescue breathing apparatus\n- Emergency communication devices\n- First aid supplies\n- Emergency lighting\n\n**Reporting:**\n- All incidents must be reported within 24 hours\n- Document everything for investigation\n- Notify relevant authorities\n\nFor detailed emergency procedures specific to your operation, please contact our safety specialists immediately at +27 60 873 1659."
+        "🚨 **Mining Emergency Procedures:**\n\n**Immediate Actions:**\n1. Ensure personal safety first\n2. Alert others in the area\n3. Contact mine rescue/emergency services\n4. Follow established evacuation procedures\n5. Report to assembly points\n\n**Emergency Contacts:**\n- Mine Rescue Services\n- Medical facilities on-site\n- Emergency coordinator\n- Hublio Emergency Support: +27 21 555 0123\n\n**Required Equipment:**\n- Self-rescue breathing apparatus\n- Emergency communication devices\n- First aid supplies\n- Emergency lighting\n\n**Reporting:**\n- All incidents must be reported within 24 hours\n- Document everything for investigation\n- Notify relevant authorities\n\nFor detailed emergency procedures specific to your operation, please contact our safety specialists immediately at +27 21 555 0123."
     } else if (lowerMessage.includes("mining")) {
       response =
         "Hublio specializes in AI-powered mining solutions for South African enterprises. We help optimize operations, enhance safety, and increase efficiency through:\n\n🤖 AI Analytics\n🛡️ Safety Systems\n📊 Operational Efficiency\n🔗 Data Integration\n⚙️ Custom Solutions\n🆘 24/7 Support\n\nWhich area interests you most?"
@@ -610,7 +610,7 @@ function generateHubsFallbackResponse(
   // Contact responses
   else if (intent === "contact_request") {
     response =
-      "I'm here to connect you with our team! Here are your options:\n\n📧 **General Inquiries:** info@hublio.co.za\n📞 **Phone:** +27 60 873 1659\n📍 **Location:** Johannesburg, South Africa\n🚨 **Emergency Support:** +27 60 873 1659\n\n**Office Hours:**\nMonday-Friday: 8:00 AM - 6:00 PM\nSaturday: 9:00 AM - 2:00 PM\n\nWould you like me to take you to our contact page to send a message?"
+      "I'm here to connect you with our team! Here are your options:\n\n📧 **General Inquiries:** info@hublio.co.za\n📞 **Phone:** +27 21 555 0123\n📍 **Location:** Cape Town, South Africa\n🚨 **Emergency Support:** +27 21 555 0123\n\n**Office Hours:**\nMonday-Friday: 8:00 AM - 6:00 PM\nSaturday: 9:00 AM - 2:00 PM\n\nWould you like me to take you to our contact page to send a message?"
     metadata.pageReference = "/contact"
     metadata.contactInfo = CONTACT_INFO
   }

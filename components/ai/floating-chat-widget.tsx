@@ -271,8 +271,8 @@ export function FloatingChatWidget() {
 
       {/* Chat Window */}
       {isOpen && (
-        <div className={`fixed bottom-6 right-6 z-[9999] transition-all duration-300 ${
-          isMinimized ? 'w-80 h-16' : 'w-96 h-[600px]'
+        <div className={`fixed inset-4 md:bottom-6 md:right-6 md:inset-auto z-[9999] transition-all duration-300 ${
+          isMinimized ? 'md:w-80 md:h-16 w-full h-16' : 'md:w-96 md:h-[600px] w-full h-full'
         }`}>
           <Card className="w-full h-full shadow-2xl border-2 border-primary/10 backdrop-blur-sm bg-white/95 dark:bg-gray-900/95">
             {/* Header */}
@@ -319,7 +319,7 @@ export function FloatingChatWidget() {
             {!isMinimized && (
               <>
                 {/* Messages */}
-                <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[400px]">
+                <CardContent className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[400px] md:max-h-[400px] max-h-[calc(100vh-200px)]">
                   {messages.map((message) => (
                     <div
                       key={message.id}
@@ -339,7 +339,7 @@ export function FloatingChatWidget() {
                         )}
                       </div>
                       <div className={`flex-1 ${message.role === 'user' ? 'text-right' : ''}`}>
-                        <div className={`inline-block p-3 rounded-lg max-w-[80%] ${
+                        <div className={`inline-block p-3 rounded-lg max-w-[85%] md:max-w-[80%] ${
                           message.role === 'user'
                             ? 'bg-gradient-to-r from-primary to-secondary text-white ml-auto shadow-lg'
                             : 'bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm'
@@ -422,10 +422,11 @@ export function FloatingChatWidget() {
                     </Button>
                   </div>
                   
-                  <div className="flex justify-between items-center mt-2">
+                  <div className="flex justify-between items-center mt-2 flex-wrap gap-2">
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
                       <Bot className="h-3 w-3" />
-                      Powered by Hublio AI • Session: {sessionId.slice(-8)}
+                      <span className="hidden md:inline">Powered by Hublio AI • Session: {sessionId.slice(-8)}</span>
+                      <span className="md:hidden">Hublio AI</span>
                     </p>
                     <Button
                       variant="ghost"
@@ -433,7 +434,7 @@ export function FloatingChatWidget() {
                       onClick={clearChat}
                       className="text-xs hover:bg-primary/10"
                     >
-                      Clear Chat
+                      Clear
                     </Button>
                   </div>
                 </div>

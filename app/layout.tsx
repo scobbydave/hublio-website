@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   description:
     "Transform your mining operations with Hublio's AI-powered solutions. Enhance safety, optimize efficiency, and reduce costs with cutting-edge technology designed for South African mining enterprises.",
   keywords:
-    "mining, South Africa, AI, enterprise, solutions, safety, analytics, automation, mining technology, Johannesburg",
+    "mining, South Africa, AI, enterprise, solutions, safety, analytics, automation, mining technology, Cape Town",
   authors: [{ name: "Hublio Team" }],
   openGraph: {
     title: "Hublio - AI-Powered Mining Solutions",

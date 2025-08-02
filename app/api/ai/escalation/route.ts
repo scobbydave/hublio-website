@@ -27,7 +27,7 @@ Session ID: ${sessionId}
 Timestamp: ${new Date().toISOString()}
 
 The AI was unable to provide a satisfactory answer and escalated this inquiry to human experts. Please follow up with this user.`,
-      source: "chat",
+      source: "chat", // Change to valid source type
       sessionId,
     })
 

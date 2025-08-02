@@ -24,22 +24,23 @@ function getSenderEmail(): string {
 }
 
 function getRecipientEmail(): string {
-  // In development, send to a test email or the same sender
-  if (process.env.NODE_ENV === "development") {
-    return "test@example.com" // This won't actually send, but won't error
-  }
-
-  // In production, use your actual business email
-  return "info@hublio.co.za"
+  // Use your actual business email for admin notifications
+  return "abutidave@gmail.com" // Your email for receiving notifications
 }
 
 export async function sendLeadNotification(lead: LeadData) {
   try {
     console.log("Attempting to send lead notification:", lead)
 
+    // Use the user's email as the "from" if they provided it, otherwise use default
+    const fromEmail = lead.email && lead.email !== "unknown@escalation.ai" 
+      ? lead.email 
+      : getSenderEmail()
+
     const { data, error } = await resend.emails.send({
-      from: getSenderEmail(),
+      from: getSenderEmail(), // Always use verified sender
       to: [getRecipientEmail()],
+      replyTo: lead.email !== "unknown@escalation.ai" ? lead.email : undefined, // User can reply directly to lead
       subject: `New Lead: ${lead.name} (${lead.source})`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -107,8 +108,8 @@ export async function sendWelcomeEmail(email: string, name: string) {
           
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280;">
             <p>Contact us:</p>
-            <p>📧 info@hublio.co.za | 📞 +27 11 123 4567</p>
-            <p>📍 Johannesburg, South Africa</p>
+            <p>📧 info@hublio.co.za | 📞 +27 21 555 0123</p>
+            <p>📍 Cape Town, South Africa</p>
           </div>
         </div>
       `,
