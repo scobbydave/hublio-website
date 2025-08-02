@@ -25,44 +25,44 @@ export async function GET(request: Request) {
     let leadsBySource = []
     let vacanciesByCategory = []
 
-    try {
-      const client = sanityClient
-      if (client) {
+    // Only try Sanity if client exists and is configured
+    if (sanityClient && process.env.SANITY_PROJECT_ID) {
+      try {
         const results = await Promise.all([
           // FAQs
-          client.fetch(`count(*[_type == "faq"])`).catch(() => 0),
-          client.fetch(`count(*[_type == "faq" && aiGenerated == true])`).catch(() => 0),
-          client.fetch(`*[_type == "faq"] | order(_createdAt desc)[0...10] {
+          sanityClient.fetch(`count(*[_type == "faq"])`).catch(() => 0),
+          sanityClient.fetch(`count(*[_type == "faq" && aiGenerated == true])`).catch(() => 0),
+          sanityClient.fetch(`*[_type == "faq"] | order(_createdAt desc)[0...10] {
             _id, question, answer, category, aiGenerated, _createdAt
           }`).catch(() => []),
           
           // Blog posts
-          client.fetch(`count(*[_type == "post"])`).catch(() => 0),
-          client.fetch(`count(*[_type == "post" && aiGenerated == true])`).catch(() => 0),
-          client.fetch(`*[_type == "post"] | order(publishedAt desc)[0...10] {
+          sanityClient.fetch(`count(*[_type == "post"])`).catch(() => 0),
+          sanityClient.fetch(`count(*[_type == "post" && aiGenerated == true])`).catch(() => 0),
+          sanityClient.fetch(`*[_type == "post"] | order(publishedAt desc)[0...10] {
             _id, title, publishedAt, aiGenerated, author
           }`).catch(() => []),
           
           // Testimonials
-          client.fetch(`count(*[_type == "testimonial"])`).catch(() => 0),
+          sanityClient.fetch(`count(*[_type == "testimonial"])`).catch(() => 0),
           
           // Leads
-          client.fetch(`count(*[_type == "lead"])`).catch(() => 0),
-          client.fetch(`*[_type == "lead"] | order(_createdAt desc)[0...10] {
+          sanityClient.fetch(`count(*[_type == "lead"])`).catch(() => 0),
+          sanityClient.fetch(`*[_type == "lead"] | order(_createdAt desc)[0...10] {
             _id, name, email, source, status, _createdAt
           }`).catch(() => []),
-          client.fetch(`*[_type == "lead"] | {
+          sanityClient.fetch(`*[_type == "lead"] | {
             "source": source,
             "count": count(*[_type == "lead" && source == ^.source])
           } | order(count desc)[0...10]`).catch(() => []),
           
           // Vacancies
-          client.fetch(`count(*[_type == "vacancy"])`).catch(() => 0),
-          client.fetch(`count(*[_type == "vacancy" && isActive == true])`).catch(() => 0),
-          client.fetch(`*[_type == "vacancy"] | order(_createdAt desc)[0...10] {
+          sanityClient.fetch(`count(*[_type == "vacancy"])`).catch(() => 0),
+          sanityClient.fetch(`count(*[_type == "vacancy" && isActive == true])`).catch(() => 0),
+          sanityClient.fetch(`*[_type == "vacancy"] | order(_createdAt desc)[0...10] {
             _id, title, company, location, postedDate, _createdAt
           }`).catch(() => []),
-          client.fetch(`*[_type == "vacancy"] | {
+          sanityClient.fetch(`*[_type == "vacancy"] | {
             "category": category,
             "count": count(*[_type == "vacancy" && category == ^.category])
           } | order(count desc)[0...10]`).catch(() => [])
