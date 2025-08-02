@@ -1,16 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
-import { Resend } from 'resend'
-
-const sanity = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET!,
-  apiVersion: '2024-01-01',
-  token: process.env.SANITY_API_TOKEN,
-  useCdn: false
-})
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
+import { sanityClient } from '@/lib/sanity'
+import { sendLeadNotification } from '@/lib/email'
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,58 +13,59 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create lead document
-    const leadDoc = {
-      _type: 'lead',
-      name,
-      email,
-      phone: phone || undefined,
-      company: company || undefined,
-      message: message || undefined,
-      source,
-      status: 'new',
-      chatContext: chatContext || undefined,
-      createdAt: new Date().toISOString()
+    console.log('Processing lead submission:', { name, email, source })
+
+    let leadId: string | undefined
+
+    // Create lead document for Sanity (if available)
+    if (sanityClient) {
+      try {
+        const leadDoc = {
+          _type: 'lead',
+          name,
+          email,
+          phone: phone || undefined,
+          company: company || undefined,
+          message: message || undefined,
+          source,
+          status: 'new',
+          chatContext: chatContext || undefined,
+          createdAt: new Date().toISOString()
+        }
+
+        const result = await sanityClient.create(leadDoc)
+        leadId = result._id
+        console.log('Lead saved to Sanity:', result._id)
+      } catch (sanityError) {
+        console.error('Sanity save failed (continuing anyway):', sanityError)
+      }
     }
 
-    // Save to Sanity
-    const result = await sanity.create(leadDoc)
-    console.log('Lead created:', result._id)
+    // Send notification email using our improved email system
+    try {
+      const emailResult = await sendLeadNotification({
+        name,
+        email,
+        phone,
+        company,
+        message: message || chatContext || 'Lead captured from chat',
+        source: source as 'chat' | 'contact-form' | 'newsletter',
+        sessionId: `lead-${Date.now()}`
+      })
 
-    // Send notification email if Resend is configured
-    if (resend) {
-      try {
-        await resend.emails.send({
-          from: 'Hublio AI <noreply@hublio.com>',
-          to: ['leads@hublio.com'], // Replace with your actual leads email
-          subject: `New Lead from ${source}: ${name}`,
-          html: `
-            <h2>New Lead Captured</h2>
-            <p><strong>Source:</strong> ${source}</p>
-            <p><strong>Name:</strong> ${name}</p>
-            <p><strong>Email:</strong> ${email}</p>
-            ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ''}
-            ${company ? `<p><strong>Company:</strong> ${company}</p>` : ''}
-            ${message ? `<p><strong>Message:</strong> ${message}</p>` : ''}
-            
-            ${chatContext ? `
-              <h3>Chat Context</h3>
-              <pre style="background: #f5f5f5; padding: 10px; border-radius: 5px; white-space: pre-wrap;">${chatContext}</pre>
-            ` : ''}
-            
-            <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
-          `
-        })
-        console.log('Lead notification email sent')
-      } catch (emailError) {
-        console.error('Failed to send lead notification email:', emailError)
-        // Don't fail the request if email fails
+      if (emailResult.success) {
+        console.log('Lead notification sent successfully')
+      } else {
+        console.log('Lead notification failed:', emailResult.error)
       }
+    } catch (emailError) {
+      console.error('Failed to send lead notification email:', emailError)
+      // Don't fail the request if email fails
     }
 
     return NextResponse.json({
       success: true,
-      leadId: result._id,
+      leadId: leadId || `temp-${Date.now()}`,
       message: 'Lead captured successfully'
     })
 
@@ -93,6 +84,16 @@ export async function GET(request: NextRequest) {
     const source = searchParams.get('source')
     const status = searchParams.get('status')
     const limit = parseInt(searchParams.get('limit') || '50')
+
+    // Return empty array if no Sanity client
+    if (!sanityClient) {
+      return NextResponse.json({
+        success: true,
+        leads: [],
+        count: 0,
+        message: 'Sanity not configured'
+      })
+    }
 
     let query = `*[_type == "lead"]`
     const params: any = {}
@@ -127,7 +128,7 @@ export async function GET(request: NextRequest) {
       followUpDate
     }`
 
-    const leads = await sanity.fetch(query, params)
+    const leads = await sanityClient.fetch(query, params)
 
     return NextResponse.json({
       success: true,

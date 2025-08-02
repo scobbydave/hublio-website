@@ -3,10 +3,10 @@
 
 export const socialMediaLinks = {
   instagram: {
-    url: "https://www.instagram.com/hublio_official/",
+    url: "https://www.instagram.com/hublioapp/",
     label: "Instagram",
     icon: "instagram",
-    handle: "@hublio_official",
+    handle: "@hublioapp",
   },
   tiktok: {
     url: "https://www.tiktok.com/@hublio",
@@ -15,16 +15,16 @@ export const socialMediaLinks = {
     handle: "@hublio",
   },
   facebook: {
-    url: "https://www.facebook.com/HublioOfficial",
+    url: "https://www.facebook.com/p/Hublio-App-61578776044208/",
     label: "Facebook",
     icon: "facebook",
-    handle: "HublioOfficial",
+    handle: "HublioApp",
   },
   whatsapp: {
-    url: "https://wa.me/27821234567", // Business WhatsApp
+    url: "https://api.whatsapp.com/send?phone=27608731659",
     label: "WhatsApp",
     icon: "whatsapp",
-    handle: "+27 82 123 4567",
+    handle: "+27 60 873 1659",
   },
   website: {
     url: "https://hublio.co.za",

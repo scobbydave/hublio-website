@@ -1,7 +1,8 @@
 import { Resend } from "resend"
 import { env } from "./env"
 
-const resend = new Resend(env.RESEND_API_KEY)
+// Initialize Resend only if API key is available
+const resend = env.RESEND_API_KEY ? new Resend(env.RESEND_API_KEY) : null
 
 export interface LeadData {
   name: string
@@ -9,53 +10,100 @@ export interface LeadData {
   message?: string
   source: "chat" | "contact-form" | "newsletter"
   sessionId?: string
+  phone?: string
+  company?: string
 }
 
-// Use a development-friendly sender address
+// Use proper sender configuration for Resend
 function getSenderEmail(): string {
-  // In development, use the default Resend domain
-  if (process.env.NODE_ENV === "development") {
-    return "onboarding@resend.dev"
-  }
-
-  // In production, you would use your verified domain
-  // return "noreply@yourdomain.com"
+  // For Resend, you can use onboarding@resend.dev for testing
+  // Or use your verified domain like noreply@yourdomain.com
   return "onboarding@resend.dev"
 }
 
 function getRecipientEmail(): string {
-  // Use your actual business email for admin notifications
-  return "abutidave@gmail.com" // Your email for receiving notifications
+  // For Resend testing, use the same email as your Resend account
+  // Once you verify a domain, you can use maredidtb@gmail.com
+  return "admin@hublio.co.za" // This should match your Resend account email
 }
 
 export async function sendLeadNotification(lead: LeadData) {
   try {
     console.log("Attempting to send lead notification:", lead)
 
-    // Use the user's email as the "from" if they provided it, otherwise use default
-    const fromEmail = lead.email && lead.email !== "unknown@escalation.ai" 
-      ? lead.email 
-      : getSenderEmail()
+    // If no Resend API key, log the lead but don't fail
+    if (!resend) {
+      console.log("No Resend API key - lead notification logged:", lead)
+      return { success: true, data: null, warning: "Email service not configured" }
+    }
 
     const { data, error } = await resend.emails.send({
-      from: getSenderEmail(), // Always use verified sender
+      from: getSenderEmail(),
       to: [getRecipientEmail()],
-      replyTo: lead.email !== "unknown@escalation.ai" ? lead.email : undefined, // User can reply directly to lead
-      subject: `New Lead: ${lead.name} (${lead.source})`,
+      replyTo: lead.email !== "unknown@escalation.ai" ? lead.email : undefined,
+      subject: `🔥 New Lead: ${lead.name} from ${lead.source}`,
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #ff6600;">New Lead Captured - Hublio Mining Solutions</h2>
-          <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0;">
-            <p><strong>Name:</strong> ${lead.name}</p>
-            <p><strong>Email:</strong> ${lead.email}</p>
-            <p><strong>Source:</strong> ${lead.source}</p>
-            ${lead.message ? `<p><strong>Message:</strong> ${lead.message}</p>` : ""}
-            ${lead.sessionId ? `<p><strong>Session ID:</strong> ${lead.sessionId}</p>` : ""}
-            <p><strong>Timestamp:</strong> ${new Date().toLocaleString()}</p>
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 10px;">
+          <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <div style="text-align: center; margin-bottom: 30px;">
+              <h1 style="color: #ff6600; margin: 0; font-size: 28px;">🚀 New Lead Alert!</h1>
+              <p style="color: #666; margin: 10px 0 0 0; font-size: 16px;">Hublio Mining Solutions</p>
+            </div>
+            
+            <div style="background: #f8fafc; padding: 25px; border-radius: 8px; border-left: 4px solid #ff6600;">
+              <h2 style="color: #333; margin: 0 0 20px 0; font-size: 20px;">👤 Contact Details</h2>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold; color: #555; width: 120px;">Name:</td>
+                  <td style="padding: 8px 0; color: #333;">${lead.name}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold; color: #555;">Email:</td>
+                  <td style="padding: 8px 0; color: #333;"><a href="mailto:${lead.email}" style="color: #ff6600; text-decoration: none;">${lead.email}</a></td>
+                </tr>
+                ${lead.phone ? `
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold; color: #555;">Phone:</td>
+                  <td style="padding: 8px 0; color: #333;"><a href="tel:${lead.phone}" style="color: #ff6600; text-decoration: none;">${lead.phone}</a></td>
+                </tr>` : ''}
+                ${lead.company ? `
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold; color: #555;">Company:</td>
+                  <td style="padding: 8px 0; color: #333;">${lead.company}</td>
+                </tr>` : ''}
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold; color: #555;">Source:</td>
+                  <td style="padding: 8px 0;">
+                    <span style="background: #ff6600; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; text-transform: uppercase;">${lead.source}</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px 0; font-weight: bold; color: #555;">Date:</td>
+                  <td style="padding: 8px 0; color: #333;">${new Date().toLocaleString('en-ZA', { timeZone: 'Africa/Johannesburg' })}</td>
+                </tr>
+              </table>
+            </div>
+            
+            ${lead.message ? `
+            <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin-top: 20px; border-left: 4px solid #ffc107;">
+              <h3 style="color: #856404; margin: 0 0 10px 0; font-size: 16px;">💬 Message:</h3>
+              <p style="color: #856404; margin: 0; font-style: italic; line-height: 1.6;">"${lead.message}"</p>
+            </div>` : ''}
+            
+            ${lead.sessionId ? `
+            <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+              <p style="margin: 0; font-size: 14px; color: #1976d2;"><strong>Session ID:</strong> ${lead.sessionId}</p>
+            </div>` : ''}
+            
+            <div style="margin-top: 30px; text-align: center; padding-top: 20px; border-top: 2px solid #eee;">
+              <p style="color: #666; margin: 0; font-size: 14px;">
+                🤖 This lead was automatically captured by Hublio AI system
+              </p>
+              <p style="color: #999; margin: 10px 0 0 0; font-size: 12px;">
+                Reply directly to this email to contact the lead
+              </p>
+            </div>
           </div>
-          <p style="color: #64748b; font-size: 14px;">
-            This lead was automatically captured by Hublio AI system.
-          </p>
         </div>
       `,
     })
@@ -84,6 +132,11 @@ export async function sendWelcomeEmail(email: string, name: string) {
   try {
     console.log("Attempting to send welcome email to:", email)
 
+    if (!resend) {
+      console.log("No Resend API key - welcome email not sent")
+      return { success: true, data: null, warning: "Email service not configured" }
+    }
+
     const { data, error } = await resend.emails.send({
       from: getSenderEmail(),
       to: [email],
@@ -108,7 +161,7 @@ export async function sendWelcomeEmail(email: string, name: string) {
           
           <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280;">
             <p>Contact us:</p>
-            <p>📧 info@hublio.co.za | 📞 +27 21 555 0123</p>
+            <p>📧 info@hublio.co.za | 📞 +27 60 873 1659</p>
             <p>📍 Cape Town, South Africa</p>
           </div>
         </div>
@@ -137,6 +190,11 @@ export async function sendWelcomeEmail(email: string, name: string) {
 
 export async function sendFAQNotification(faq: { question: string; answer: string }) {
   try {
+    if (!resend) {
+      console.log("No Resend API key - FAQ notification not sent")
+      return { success: true, data: null, warning: "Email service not configured" }
+    }
+
     const { data, error } = await resend.emails.send({
       from: getSenderEmail(),
       to: [getRecipientEmail()],
@@ -180,6 +238,11 @@ export async function sendSocialMediaApproval(data: {
   socialPosts: Array<{ platform: string; content: string }>
 }) {
   try {
+    if (!resend) {
+      console.log("No Resend API key - social media approval not sent")
+      return { success: true, data: null, warning: "Email service not configured" }
+    }
+
     const postsHtml = data.socialPosts
       .map(
         (post) => `

@@ -139,7 +139,7 @@ function createFallbackResponse(message: string): string {
   }
 
   if (lowerMessage.includes("contact") || lowerMessage.includes("demo") || lowerMessage.includes("meeting")) {
-    return "I'd be happy to help you get in touch with our team! You can reach us at:\n\n📧 info@hublio.co.za\n📞 +27 21 555 0123\n📍 Cape Town, South Africa\n\nWould you like me to have someone contact you directly? If so, please share your name and email address."
+    return "I'd be happy to help you get in touch with our team! You can reach us at:\n\n📧 info@hublio.co.za\n📞 +27 60 873 1659\n📍 65 Fairways Pinnacle Point Golf Estate, Mossel Bay, Western Cape, 6500\n\nWould you like me to have someone contact you directly? If so, please share your name and email address."
   }
 
   if (lowerMessage.includes("hello") || lowerMessage.includes("hi") || lowerMessage.includes("hey")) {

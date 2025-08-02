@@ -481,6 +481,9 @@ export default function VacanciesPage() {
                 <DialogTitle>AI Job Matching</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                  <p>💡 <strong>Smart Job Matching:</strong> Our system analyzes your skills against job requirements to find your best matches.</p>
+                </div>
                 <div>
                   <label className="text-sm font-medium mb-2 block">
                     Describe your skills, experience, and qualifications:

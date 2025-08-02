@@ -149,11 +149,11 @@ export function Contact() {
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className="h-5 w-5 text-primary" />
-                  <span>+27 21 555 0123</span>
+                  <span>+27 60 873 1659</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <MapPin className="h-5 w-5 text-primary" />
-                  <span>Cape Town, South Africa</span>
+                  <span>65 Fairways Pinnacle Point Golf Estate<br />Mossel Bay, Western Cape, 6500</span>
                 </div>
               </div>
             </div>

@@ -123,15 +123,15 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="tel:+27215550123" className="hover:text-primary transition-colors">
-                  +27 21 555 0123
+                <Link href="tel:+27608731659" className="hover:text-primary transition-colors">
+                  +27 60 873 1659
                 </Link>
               </li>
-              <li>Cape Town, South Africa</li>
+              <li>65 Fairways Pinnacle Point Golf Estate<br />Mossel Bay, Western Cape, 6500</li>
               <li className="text-xs pt-2">
                 <span className="text-destructive">Emergency:</span>{" "}
-                <Link href="tel:+27215550123" className="hover:text-primary transition-colors">
-                  +27 21 555 0123
+                <Link href="tel:+27608731659" className="hover:text-primary transition-colors">
+                  +27 60 873 1659
                 </Link>
               </li>
             </ul>
@@ -139,7 +139,7 @@ export function Footer() {
             {/* WhatsApp Business */}
             <div className="pt-2">
               <Button variant="outline" size="sm" asChild className="text-xs bg-transparent">
-                <Link href="https://wa.me/27215550123" target="_blank" rel="noopener noreferrer">
+                <Link href="https://wa.me/27608731659" target="_blank" rel="noopener noreferrer">
                   <WhatsAppIcon className="h-3 w-3 mr-2" />
                   WhatsApp Business
                 </Link>

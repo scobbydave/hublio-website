@@ -11,6 +11,84 @@ export interface JobMatchResult {
   missingSkills: string[]
 }
 
+// Fallback keyword matching when AI is unavailable
+function performKeywordMatching(
+  userSkills: string,
+  jobDescription: string,
+  jobRequirements: string[]
+): JobMatchResult {
+  const normalizeText = (text: string) => text.toLowerCase().replace(/[^\w\s]/g, ' ')
+  
+  const userWords = normalizeText(userSkills).split(/\s+/).filter(word => word.length > 2)
+  const jobWords = normalizeText(`${jobDescription} ${jobRequirements.join(' ')}`).split(/\s+/).filter(word => word.length > 2)
+  
+  // Mining-specific keywords with weights
+  const miningKeywords: Record<string, number> = {
+    // Experience levels
+    'underground': 15, 'surface': 12, 'openpit': 12, 'processing': 10,
+    'safety': 20, 'mining': 10, 'operations': 8, 'equipment': 12,
+    // Skills and certifications
+    'certification': 15, 'licensed': 12, 'qualified': 10,
+    'supervisor': 12, 'manager': 10, 'operator': 10, 'technician': 8,
+    // Technical skills
+    'maintenance': 10, 'repair': 8, 'troubleshooting': 10,
+    'mechanical': 8, 'electrical': 8, 'hydraulic': 8,
+    // Experience indicators
+    'years': 12, 'experience': 10, 'knowledge': 8, 'expertise': 10
+  }
+  
+  let score = 0
+  let matchedSkills: string[] = []
+  let reasons: string[] = []
+  
+  // Calculate keyword matches with weights
+  userWords.forEach(userWord => {
+    if (jobWords.includes(userWord)) {
+      const weight = miningKeywords[userWord] || 5
+      score += weight
+      matchedSkills.push(userWord)
+    }
+  })
+  
+  // Normalize score to 0-100
+  score = Math.min(100, Math.max(0, score))
+  
+  // Generate reasons based on matches
+  if (matchedSkills.includes('safety')) {
+    reasons.push('Safety experience is highly valued in mining operations')
+  }
+  if (matchedSkills.includes('underground') || matchedSkills.includes('surface')) {
+    reasons.push('Relevant mining environment experience detected')
+  }
+  if (matchedSkills.includes('equipment') || matchedSkills.includes('operator')) {
+    reasons.push('Equipment operation skills align with job requirements')
+  }
+  if (matchedSkills.includes('certification') || matchedSkills.includes('licensed')) {
+    reasons.push('Professional certifications meet industry standards')
+  }
+  if (matchedSkills.includes('years') || matchedSkills.includes('experience')) {
+    reasons.push('Experience level appears suitable for this role')
+  }
+  
+  if (reasons.length === 0) {
+    reasons.push('Basic skill alignment detected through keyword analysis')
+  }
+  
+  // Add fallback notice
+  reasons.push('⚠️ Using simplified matching - full AI analysis temporarily unavailable')
+  
+  return {
+    score,
+    reasons,
+    recommendations: [
+      'Highlight your mining-specific experience prominently',
+      'Emphasize safety certifications and training',
+      'Mention any equipment operation experience'
+    ],
+    missingSkills: score < 50 ? ['Consider additional mining certifications', 'Gain more hands-on experience'] : []
+  }
+}
+
 export async function matchUserToJob(
   userSkills: string | string[],
   jobDescription: string,
@@ -63,8 +141,17 @@ Format your response as JSON:
       recommendations: result.recommendations || [],
       missingSkills: result.missingSkills || []
     }
-  } catch (error) {
-    console.error('Job matching failed:', error)
+  } catch (error: any) {
+    console.error('Job matching failed, using fallback:', error)
+    
+    // Check if it's a quota error
+    if (error?.status === 429 || (error?.error && error.error.code === 'insufficient_quota')) {
+      console.log('OpenAI quota exceeded, using keyword matching fallback')
+      const skillsText = Array.isArray(userSkills) ? userSkills.join(', ') : userSkills
+      return performKeywordMatching(skillsText, jobDescription, jobRequirements)
+    }
+    
+    // For other errors, return generic error response
     return {
       score: 0,
       reasons: ['Unable to analyze match due to technical error'],
