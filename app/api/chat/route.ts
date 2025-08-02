@@ -102,8 +102,8 @@ export async function POST(request: NextRequest) {
     try {
       // Generate Hubs response
       hubsResponse = await generateHubsResponse(session.messages, context)
-    } catch (aiError) {
-      console.log("Hubs AI error, using fallback:", aiError.message)
+    } catch (aiError: any) {
+      console.log("Hubs AI error, using fallback:", aiError?.message || aiError)
       hubsResponse = {
         response: createBasicHubsResponse(message),
         metadata: { intent: "general" },
@@ -124,6 +124,24 @@ export async function POST(request: NextRequest) {
     updateHubsSession(sessionId, session)
 
     console.log("Hubs Chat API: Sending response:", hubsResponse.response)
+
+    // Log escalation if this is an admin escalation
+    if (hubsResponse.metadata?.intent === "admin_escalation") {
+      try {
+        await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/ai/escalation`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            sessionId,
+            originalQuestion: hubsResponse.metadata.originalQuestion,
+            userMessage: message,
+            escalationType: hubsResponse.metadata.escalationType,
+          }),
+        })
+      } catch (escalationError) {
+        console.error("Failed to log escalation:", escalationError)
+      }
+    }
 
     // Return response with metadata for frontend actions
     return NextResponse.json(

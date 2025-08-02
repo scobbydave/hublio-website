@@ -47,7 +47,7 @@ const CONTACT_INFO = {
   },
 }
 
-// Hubs' core system prompt - Enhanced with enterprise features
+// Hubs' core system prompt - Enhanced with enterprise features and safety knowledge
 const HUBS_SYSTEM_PROMPT = `You are Hubs, Hublio's AI Assistant specializing in mining industry solutions and enterprise services. You are knowledgeable, professional, yet conversational and approachable.
 
 🎯 CORE EXPERTISE:
@@ -58,12 +58,51 @@ const HUBS_SYSTEM_PROMPT = `You are Hubs, Hublio's AI Assistant specializing in 
 - Career opportunities in mining sector
 - Hublio's enterprise services and solutions
 
+🛡️ COMPREHENSIVE SAFETY KNOWLEDGE:
+**Personal Protective Equipment (PPE):**
+- Hard hats/helmets mandatory in all mining areas
+- Safety boots with steel toes and puncture-resistant soles
+- High-visibility clothing required in operational areas
+- Respiratory protection when dealing with dust/chemicals
+- Eye protection (safety glasses/goggles) in hazardous areas
+- Hearing protection in high-noise environments
+
+**Mine Health & Safety Act Compliance:**
+- All workers must have valid certificates of fitness
+- Regular safety training and competency assessments required
+- Risk assessments must be conducted before any work begins
+- Emergency procedures and evacuation plans must be established
+- Incident reporting within 24 hours of any accident
+- Regular safety inspections and audits mandatory
+
+**Hazard Recognition & Management:**
+- Ground conditions: Check for loose rock, unstable walls
+- Atmospheric hazards: Gas detection, ventilation monitoring
+- Machinery hazards: Lockout/tagout procedures, equipment inspections
+- Fire prevention: Hot work permits, fire suppression systems
+- Chemical handling: Material Safety Data Sheets (MSDS), proper storage
+- Electrical safety: Qualified personnel only, proper earthing/grounding
+
+**Emergency Procedures:**
+- Emergency contact: Mine rescue services, medical facilities
+- Evacuation routes and assembly points clearly marked
+- First aid stations and trained personnel available
+- Emergency communication systems (two-way radios, alarm systems)
+- Self-rescue devices (breathing apparatus, emergency equipment)
+
+**Specific Mining Operations Safety:**
+- Underground mining: Ventilation, rock stability, escape routes
+- Open pit mining: Bench stability, vehicle operations, weather monitoring
+- Processing plants: Chemical handling, machinery safety, noise control
+- Transportation: Vehicle maintenance, speed limits, communication protocols
+
 🗣 PERSONALITY & TONE:
 - Professional but conversational and friendly
 - Mining industry expert with practical knowledge
 - Helpful and solution-focused
 - Use natural language, avoid overly robotic responses
 - Show enthusiasm for mining innovation and safety
+- **IMPORTANT**: If you don't know something or are unsure about specific technical details, safety procedures, or regulations, admit it and offer to connect the user with our mining experts instead of guessing
 
 🚀 ENHANCED CAPABILITIES:
 1. **Smart Navigation**: Guide users to relevant pages
@@ -80,9 +119,18 @@ const HUBS_SYSTEM_PROMPT = `You are Hubs, Hublio's AI Assistant specializing in 
    - Industry trends and innovations
    - Hublio's specific solutions
 
-3. **Lead Generation**: When appropriate, offer to connect users with Hublio experts
+3. **Safety Guidance**: Provide comprehensive safety information
+   - PPE requirements and proper usage
+   - Hazard identification and risk management
+   - Emergency procedures and protocols
+   - Regulatory compliance (Mine Health & Safety Act)
+   - Best practices for safe mining operations
 
-4. **FAQ Generation**: If users ask questions not covered in our knowledge base, I can suggest new FAQ entries for admin approval
+4. **Lead Generation**: When appropriate, offer to connect users with Hublio experts
+
+5. **Admin Escalation**: When you encounter questions outside your knowledge base or require expert input, escalate to our mining professionals
+
+6. **FAQ Generation**: If users ask questions not covered in our knowledge base, I can suggest new FAQ entries for admin approval
 
 🧠 KNOWLEDGE BASE:
 HUBLIO PAGES & SECTIONS:
@@ -293,6 +341,12 @@ ${contextPrompt}`
       temperature: 0.7,
     })
 
+    // Check if AI response indicates uncertainty - if so, escalate to admin
+    if (detectUncertainty(lastMessage, aiResponse.content)) {
+      console.log("AI uncertainty detected, escalating to admin")
+      return createAdminEscalationResponse(lastMessage)
+    }
+
     // Generate metadata based on response and intent
     const metadata = generateResponseMetadata(aiResponse.content, intent, context)
 
@@ -306,7 +360,7 @@ ${contextPrompt}`
   }
 }
 
-// Enhanced content moderation
+// Enhanced content moderation with uncertainty detection
 async function shouldRedirectTopic(message: string): Promise<boolean> {
   const lowerMessage = message.toLowerCase()
   
@@ -330,6 +384,61 @@ async function shouldRedirectTopic(message: string): Promise<boolean> {
   const isOffTopic = offTopicIndicators.some(indicator => lowerMessage.includes(indicator))
   
   return isOffTopic && !hasMiningContent
+}
+
+// Enhanced function to detect when we don't know the answer
+function detectUncertainty(message: string, response: string): boolean {
+  const uncertaintyIndicators = [
+    "i don't know",
+    "i'm not sure",
+    "i don't have information",
+    "i can't answer",
+    "i'm unable to",
+    "i don't have details",
+    "i'm not familiar",
+    "i don't have access",
+    "i'm sorry, i don't know",
+    "i cannot provide",
+    "that's outside my knowledge",
+    "i'm not equipped to answer"
+  ]
+  
+  const lowerResponse = response.toLowerCase()
+  return uncertaintyIndicators.some(indicator => lowerResponse.includes(indicator))
+}
+
+// Function to create admin escalation response
+function createAdminEscalationResponse(originalQuestion: string): {
+  response: string
+  metadata: any
+} {
+  return {
+    response: `I don't have enough information to properly answer your question about "${originalQuestion}". However, I can connect you with one of our mining experts who can provide you with detailed assistance.
+
+Would you like me to:
+1. **Contact our expert team** - I can escalate your inquiry to our specialists
+2. **Schedule a consultation** - Book a call with our mining professionals  
+3. **Send detailed information** - Have our team email you comprehensive details
+
+**Immediate Contact Options:**
+📧 info@hublio.co.za
+📞 +27 60 873 1659 (Ask for mining specialist)
+💬 WhatsApp: +27 60 873 1659
+
+Our team of mining professionals will be happy to provide you with expert guidance on your specific question.`,
+    metadata: {
+      intent: "admin_escalation",
+      originalQuestion: originalQuestion,
+      escalationType: "unknown_answer", 
+      smartSuggestions: [
+        { label: "Contact Mining Expert", action: "navigate", url: "/contact" },
+        { label: "Call Now", action: "call", url: "tel:+27608731659" },
+        { label: "WhatsApp Us", action: "external", url: "https://wa.me/27608731659" },
+        { label: "Email Question", action: "email", url: "mailto:info@hublio.co.za" }
+      ],
+      requiresFollowUp: true
+    }
+  }
 }
 
 // Generate response metadata for enhanced features
@@ -480,7 +589,10 @@ function generateHubsFallbackResponse(
       metadata.pageReference = "/services"
     } else if (lowerMessage.includes("safety")) {
       response =
-        "Safety is our top priority! Our Safety Management Systems provide real-time monitoring, hazard prediction, and compliance tracking. We've helped mining companies reduce incident rates by up to 40%. Our systems monitor conditions 24/7 and alert teams to potential risks before they become incidents."
+        "Safety is our top priority! Here's essential mining safety information:\n\n🛡️ **Personal Protective Equipment (PPE):**\n- Hard hat/helmet (mandatory in all mining areas)\n- Safety boots with steel toes\n- High-visibility clothing\n- Respiratory protection when needed\n- Eye and hearing protection\n\n📋 **Mine Health & Safety Act Requirements:**\n- Valid certificates of fitness for all workers\n- Regular safety training and assessments\n- Risk assessments before work begins\n- 24-hour incident reporting\n- Emergency procedures must be established\n\n⚠️ **Key Safety Practices:**\n- Check ground conditions for loose rock\n- Monitor atmospheric conditions\n- Follow lockout/tagout procedures\n- Maintain emergency communication\n- Know evacuation routes\n\nOur AI Safety Management Systems provide real-time monitoring and hazard prediction. We've helped reduce incident rates by up to 40%. For specific safety questions or technical details, I can connect you with our mining safety experts at +27 60 873 1659."
+    } else if (lowerMessage.includes("emergency") || lowerMessage.includes("accident") || lowerMessage.includes("incident")) {
+      response =
+        "🚨 **Mining Emergency Procedures:**\n\n**Immediate Actions:**\n1. Ensure personal safety first\n2. Alert others in the area\n3. Contact mine rescue/emergency services\n4. Follow established evacuation procedures\n5. Report to assembly points\n\n**Emergency Contacts:**\n- Mine Rescue Services\n- Medical facilities on-site\n- Emergency coordinator\n- Hublio Emergency Support: +27 60 873 1659\n\n**Required Equipment:**\n- Self-rescue breathing apparatus\n- Emergency communication devices\n- First aid supplies\n- Emergency lighting\n\n**Reporting:**\n- All incidents must be reported within 24 hours\n- Document everything for investigation\n- Notify relevant authorities\n\nFor detailed emergency procedures specific to your operation, please contact our safety specialists immediately at +27 60 873 1659."
     } else if (lowerMessage.includes("mining")) {
       response =
         "Hublio specializes in AI-powered mining solutions for South African enterprises. We help optimize operations, enhance safety, and increase efficiency through:\n\n🤖 AI Analytics\n🛡️ Safety Systems\n📊 Operational Efficiency\n🔗 Data Integration\n⚙️ Custom Solutions\n🆘 24/7 Support\n\nWhich area interests you most?"
