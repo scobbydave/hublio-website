@@ -123,3 +123,49 @@ export async function generateMiningContent(
     temperature: 0.7,
   })
 }
+
+// Generate social media post
+export async function generateSocialMediaPost(topic: string): Promise<string> {
+  const systemPrompt = `You are a social media manager for a mining company. Create engaging, professional social media posts about mining industry topics. Keep it concise, informative, and suitable for LinkedIn and Twitter. Include relevant hashtags for the South African mining industry.`
+  
+  return await generateText(`Create a social media post about: ${topic}`, {
+    systemPrompt,
+    maxTokens: 200,
+    temperature: 0.8,
+  })
+}
+
+// Generate FAQ answer
+export async function generateFAQAnswer(question: string): Promise<string> {
+  const systemPrompt = `You are a mining industry expert. Provide clear, accurate answers to mining industry questions. Focus on South African mining context, regulations, and best practices.`
+  
+  return await generateText(`Answer this FAQ question: ${question}`, {
+    systemPrompt,
+    maxTokens: 300,
+    temperature: 0.6,
+  })
+}
+
+// Generate blog content
+export async function generateBlogContent(topic: string): Promise<string> {
+  return await generateMiningContent(topic, "blog")
+}
+
+// Summarize news article
+export async function summarizeNewsArticle(article: string): Promise<string> {
+  const systemPrompt = `You are a mining industry analyst. Summarize news articles focusing on their relevance to the South African mining industry. Keep summaries concise but informative.`
+  
+  return await generateText(`Summarize this article: ${article}`, {
+    systemPrompt,
+    maxTokens: 250,
+    temperature: 0.5,
+  })
+}
+
+// Summarize news (general)
+export async function summarizeNews(articles: string[]): Promise<string[]> {
+  const summaries = await Promise.all(
+    articles.map(article => summarizeNewsArticle(article))
+  )
+  return summaries
+}

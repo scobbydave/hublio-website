@@ -1,13 +1,13 @@
 import { createClient } from "@sanity/client"
 
-// Sanity client configuration
-const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID || "",
+// Sanity client configuration - only create if projectId exists
+const sanityClient = process.env.SANITY_PROJECT_ID ? createClient({
+  projectId: process.env.SANITY_PROJECT_ID,
   dataset: process.env.SANITY_DATASET || "production",
   token: process.env.SANITY_API_TOKEN,
   useCdn: false,
   apiVersion: "2024-01-01",
-})
+}) : null
 
 // Validate Sanity connection
 export function validateSanityConnection(): boolean {
@@ -88,7 +88,7 @@ export async function createBlogPost(post: Omit<BlogPost, "_id" | "_type">): Pro
 
 // Get all blog posts
 export async function getBlogPosts(limit = 10): Promise<BlogPost[]> {
-  if (!validateSanityConnection()) {
+  if (!validateSanityConnection() || !sanityClient) {
     console.log("Sanity not configured, returning empty array")
     return []
   }
@@ -225,7 +225,7 @@ export async function getBlogStats(): Promise<{
   draftPosts: number
   totalFAQs: number
 }> {
-  if (!validateSanityConnection()) {
+  if (!validateSanityConnection() || !sanityClient) {
     return {
       totalPosts: 0,
       publishedPosts: 0,

@@ -213,3 +213,25 @@ export function getMiningFAQTopics(): string[] {
     "Regulatory Requirements",
   ]
 }
+
+// Determine if FAQ should be generated based on user interaction
+export function shouldGenerateFAQ(userMessage: string): boolean {
+  const faqTriggers = [
+    'what is',
+    'how to',
+    'how do',
+    'what are',
+    'tell me about',
+    'explain',
+    'help with',
+    'guide me',
+    'best practices',
+    'safety',
+    'compliance',
+    'procedure',
+    'regulation'
+  ]
+  
+  const messageLower = userMessage.toLowerCase()
+  return faqTriggers.some(trigger => messageLower.includes(trigger))
+}
