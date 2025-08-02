@@ -82,9 +82,9 @@ export async function GET(request: Request) {
         activeVacancies = results[11] || 0
         recentVacancies = results[12] || []
         vacanciesByCategory = results[13] || []
+      } catch (error) {
+        console.log("Sanity stats fetch failed, using defaults:", (error as Error).message)
       }
-    } catch (error) {
-      console.log("Sanity stats fetch failed, using defaults:", (error as Error).message)
     }
 
     // Fetch analytics from Redis
