@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+import { huggingFaceService } from './huggingface'
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -75,7 +76,7 @@ function performKeywordMatching(
   }
   
   // Add fallback notice
-  reasons.push('⚠️ Using simplified matching - full AI analysis temporarily unavailable')
+  reasons.push('⚠️ Using basic keyword matching - AI services temporarily unavailable')
   
   return {
     score,
@@ -142,11 +143,30 @@ Format your response as JSON:
       missingSkills: result.missingSkills || []
     }
   } catch (error: any) {
-    console.error('Job matching failed, using fallback:', error)
+    console.error('Job matching failed, trying fallbacks:', error)
     
     // Check if it's a quota error
     if (error?.status === 429 || (error?.error && error.error.code === 'insufficient_quota')) {
-      console.log('OpenAI quota exceeded, using keyword matching fallback')
+      console.log('OpenAI quota exceeded, trying Hugging Face fallback...')
+      
+      // Try Hugging Face Mistral-7B first
+      try {
+        const isHfAvailable = await huggingFaceService.isAvailable()
+        if (isHfAvailable) {
+          console.log('Using Hugging Face Mistral-7B for job matching')
+          const skillsText = Array.isArray(userSkills) ? userSkills.join(', ') : userSkills
+          const hfResult = await huggingFaceService.matchUserToJob(skillsText, jobDescription, jobRequirements)
+          
+          // Add indicator that this is from Hugging Face
+          hfResult.reasons.push('🤖 Analysis powered by Mistral-7B local AI model')
+          return hfResult
+        }
+      } catch (hfError) {
+        console.error('Hugging Face fallback failed:', hfError)
+      }
+      
+      // Fall back to keyword matching if Hugging Face is also unavailable
+      console.log('Using keyword matching as final fallback')
       const skillsText = Array.isArray(userSkills) ? userSkills.join(', ') : userSkills
       return performKeywordMatching(skillsText, jobDescription, jobRequirements)
     }

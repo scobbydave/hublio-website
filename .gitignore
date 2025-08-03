@@ -18,6 +18,10 @@ yarn-error.log*
 
 # env files
 .env*
+!.env.example
+
+# Hugging Face model (cloned repository)
+mistral-7b-chatbot/
 
 # vercel
 .vercel
