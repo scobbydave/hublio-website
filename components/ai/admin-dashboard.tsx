@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Bot, Globe, FileText, TrendingUp, Activity, Clock, MessageSquare, Users, Target, Zap, RefreshCw, Settings, BarChart3 } from "lucide-react"
+import { Bot, Globe, FileText, TrendingUp, Activity, Clock, MessageSquare, Users, Target, Zap, RefreshCw, Settings, BarChart3, Shield } from "lucide-react"
 import { ChatAnalyticsWidget } from "@/components/admin/chat-analytics-widget"
 import { VacanciesWidget } from "@/components/admin/vacancies-widget"
 import { SystemHealthWidget } from "@/components/admin/system-health-widget"
@@ -14,6 +14,7 @@ import { BlogManagementWidget } from "@/components/admin/blog-management-widget"
 import { SupplierDirectoryWidget } from "@/components/admin/supplier-directory-widget"
 import { MiningProjectsWidget } from "@/components/admin/mining-projects-widget"
 import { TrainingManagementWidget } from "@/components/admin/training-management-widget"
+import { RegulationHubWidget } from "@/components/admin/regulation-hub-widget"
 import MiningParticles from "@/components/MiningParticles"
 import Link from "next/link"
 
@@ -262,10 +263,14 @@ export function AdminDashboard() {
 
           {/* Interactive Tabs */}
           <Tabs defaultValue="chat" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-7 lg:w-fit">
+            <TabsList className="grid w-full grid-cols-8 lg:w-fit">
               <TabsTrigger value="chat" className="flex items-center space-x-2">
                 <MessageSquare className="h-4 w-4" />
                 <span>AI Chat</span>
+              </TabsTrigger>
+              <TabsTrigger value="regulation" className="flex items-center space-x-2">
+                <Shield className="h-4 w-4" />
+                <span>Regulation</span>
               </TabsTrigger>
               <TabsTrigger value="vacancies" className="flex items-center space-x-2">
                 <Target className="h-4 w-4" />
@@ -295,6 +300,10 @@ export function AdminDashboard() {
 
             <TabsContent value="chat" className="space-y-6">
               <ChatAnalyticsWidget />
+            </TabsContent>
+
+            <TabsContent value="regulation" className="space-y-6">
+              <RegulationHubWidget />
             </TabsContent>
 
             <TabsContent value="vacancies" className="space-y-6">
