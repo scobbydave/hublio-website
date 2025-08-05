@@ -131,7 +131,7 @@ I only provide information related to mining compliance. How can I assist you to
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="h-[600px] flex flex-col">
+      <Card className="h-[600px] flex flex-col overflow-hidden max-w-full">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-100 dark:bg-blue-900 rounded-lg">
@@ -152,9 +152,9 @@ I only provide information related to mining compliance. How can I assist you to
           </div>
         </CardHeader>
 
-        <CardContent className="flex-1 flex flex-col p-0">
-          <ScrollArea className="flex-1 px-6" ref={scrollAreaRef}>
-            <div className="space-y-4 py-4">
+        <CardContent className="flex-1 flex flex-col p-0 overflow-hidden">
+          <ScrollArea className="flex-1 px-6 overflow-x-hidden" ref={scrollAreaRef}>
+            <div className="space-y-4 py-4 max-w-full overflow-hidden">
               <AnimatePresence>
                 {messages.map((message) => (
                   <motion.div
@@ -178,29 +178,33 @@ I only provide information related to mining compliance. How can I assist you to
                         <Bot className="h-4 w-4 text-slate-600 dark:text-slate-400" />
                       )}
                     </div>
-                    <div className={`flex-1 ${
+                    <div className={`flex-1 min-w-0 ${
                       message.role === 'user' ? 'text-right' : ''
                     }`}>
-                      <div className={`p-3 rounded-lg max-w-[90%] break-words ${
+                      <div className={`p-3 rounded-lg max-w-full break-words overflow-hidden ${
                         message.role === 'user'
-                          ? 'bg-blue-600 text-white ml-auto'
-                          : 'bg-white dark:bg-slate-700 border mr-auto'
+                          ? 'bg-blue-600 text-white inline-block'
+                          : 'bg-white dark:bg-slate-700 border inline-block max-w-[85%]'
                       }`}>
                         {message.role === 'assistant' ? (
                           <div className="prose prose-sm dark:prose-invert max-w-none overflow-hidden">
                             <ReactMarkdown remarkPlugins={[remarkGfm]} 
                               components={{
-                                p: ({children}) => <p className="break-words mb-2 last:mb-0">{children}</p>,
-                                ul: ({children}) => <ul className="break-words ml-4 mb-2">{children}</ul>,
-                                li: ({children}) => <li className="break-words mb-1">{children}</li>,
-                                strong: ({children}) => <strong className="font-semibold">{children}</strong>
+                                p: ({children}) => <p className="break-words mb-2 last:mb-0 overflow-wrap-anywhere hyphens-auto">{children}</p>,
+                                ul: ({children}) => <ul className="break-words ml-4 mb-2 overflow-wrap-anywhere">{children}</ul>,
+                                li: ({children}) => <li className="break-words mb-1 overflow-wrap-anywhere hyphens-auto">{children}</li>,
+                                strong: ({children}) => <strong className="font-semibold break-words overflow-wrap-anywhere">{children}</strong>,
+                                h1: ({children}) => <h1 className="text-lg font-bold mb-2 break-words overflow-wrap-anywhere">{children}</h1>,
+                                h2: ({children}) => <h2 className="text-md font-bold mb-2 break-words overflow-wrap-anywhere">{children}</h2>,
+                                h3: ({children}) => <h3 className="text-sm font-bold mb-1 break-words overflow-wrap-anywhere">{children}</h3>,
+                                code: ({children}) => <code className="break-all bg-slate-100 dark:bg-slate-800 px-1 py-0.5 rounded text-xs">{children}</code>
                               }}
                             >
                               {message.content}
                             </ReactMarkdown>
                           </div>
                         ) : (
-                          <p className="text-sm break-words">{message.content}</p>
+                          <p className="text-sm break-words overflow-wrap-anywhere hyphens-auto">{message.content}</p>
                         )}
                       </div>
                       <p className="text-xs text-slate-500 mt-1">
