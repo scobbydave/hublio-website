@@ -111,7 +111,10 @@ export function AdminDashboardV2({ initialKey }: AdminDashboardV2Props) {
 
       if (approvalRes.status === 'fulfilled' && approvalRes.value.ok) {
         const data = await approvalRes.value.json()
+        console.log('Dashboard approval data:', data)
         newStats.pendingApprovals = data.stats?.total || 0
+      } else {
+        console.log('Failed to fetch approval data:', approvalRes.status)
       }
 
       if (vacancyRes.status === 'fulfilled' && vacancyRes.value.ok) {
