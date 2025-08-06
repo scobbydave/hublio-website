@@ -85,8 +85,12 @@ export function AdminDashboardV2({ initialKey }: AdminDashboardV2Props) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
 
   useEffect(() => {
+    // Store admin key in localStorage for child components
+    if (initialKey) {
+      localStorage.setItem('adminKey', initialKey)
+    }
     fetchDashboardStats()
-  }, [])
+  }, [initialKey])
 
   const fetchDashboardStats = async () => {
     try {
