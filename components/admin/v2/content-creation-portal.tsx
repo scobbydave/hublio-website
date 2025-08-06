@@ -66,7 +66,11 @@ const categories = {
 
 const regions = ['South Africa', 'Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Limpopo', 'Mpumalanga', 'North West', 'Africa', 'Global']
 
-export function ContentCreationPortal() {
+interface ContentCreationPortalProps {
+  dashboardKey?: string
+}
+
+export function ContentCreationPortal({ dashboardKey }: ContentCreationPortalProps) {
   const [activeTab, setActiveTab] = useState('create')
   const [selectedType, setSelectedType] = useState('')
   const [form, setForm] = useState<ContentForm>({
@@ -112,7 +116,8 @@ export function ContentCreationPortal() {
 
     try {
       setLoading(true)
-      const response = await fetch('/api/admin/content/generate', {
+      const key = dashboardKey || 'hublio-secure-2024' // fallback for local development
+      const response = await fetch(`/api/admin/content/generate?key=${key}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -158,7 +163,8 @@ export function ContentCreationPortal() {
 
     try {
       setLoading(true)
-      const response = await fetch('/api/admin/content/create', {
+      const key = dashboardKey || 'hublio-secure-2024' // fallback for local development
+      const response = await fetch(`/api/admin/content/create?key=${key}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

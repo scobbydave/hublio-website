@@ -100,7 +100,22 @@ export async function getAnalytics(event: string, limit: number = 100) {
   
   try {
     const data = await client.lrange(`analytics:${event}`, 0, limit - 1)
-    return data.map((item: any) => JSON.parse(item))
+    return data.map((item: any) => {
+      try {
+        // Handle case where item might already be parsed or is a string
+        if (typeof item === 'string') {
+          return JSON.parse(item)
+        } else if (typeof item === 'object') {
+          return item
+        } else {
+          console.warn('Unexpected item type in analytics:', typeof item, item)
+          return {}
+        }
+      } catch (parseError) {
+        console.warn('Failed to parse analytics item:', item, parseError)
+        return {}
+      }
+    }).filter(item => Object.keys(item).length > 0) // Remove empty objects
   } catch (error) {
     console.error('Failed to get analytics:', error)
     return []

@@ -267,7 +267,7 @@ export function AdminDashboardV2({ initialKey }: AdminDashboardV2Props) {
         )
       
       case 'content-portal':
-        return <ContentCreationPortal />
+        return <ContentCreationPortal dashboardKey={initialKey} />
       
       case 'approval-queue':
         return <ApprovalQueueWidget />

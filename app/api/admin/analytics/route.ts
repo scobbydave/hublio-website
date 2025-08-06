@@ -31,6 +31,15 @@ export async function GET(request: NextRequest) {
         getAnalytics('contact_inquiry', 100)
       ])
 
+      console.log('Analytics fetch results:', {
+        chatEvents: chatEvents.status,
+        chatCount: chatEvents.status === 'fulfilled' ? chatEvents.value?.length : 'error',
+        pageViews: pageViews.status,
+        pageViewCount: pageViews.status === 'fulfilled' ? pageViews.value?.length : 'error',
+        contactEvents: contactEvents.status,
+        contactCount: contactEvents.status === 'fulfilled' ? contactEvents.value?.length : 'error'
+      })
+
       // Process chat sessions
       if (chatEvents.status === 'fulfilled') {
         realAnalytics.chatSessions = chatEvents.value?.length || 0
