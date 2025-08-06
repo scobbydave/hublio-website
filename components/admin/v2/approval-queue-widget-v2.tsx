@@ -106,7 +106,6 @@ export function ApprovalQueueWidgetV2() {
       // Get admin key from URL params or localStorage
       const urlParams = new URLSearchParams(window.location.search)
       const key = urlParams.get('key') || localStorage.getItem('adminKey') || process.env.NEXT_PUBLIC_DASHBOARD_KEY
-      
       const response = await fetch(`/api/admin/approval-queue?key=${encodeURIComponent(key || '')}`)
       if (!response.ok) {
         if (response.status === 401) {
@@ -114,65 +113,15 @@ export function ApprovalQueueWidgetV2() {
         }
         throw new Error('Failed to fetch approval items')
       }
-      
       const data = await response.json()
       setItems(data.items || [])
       setStats(data.stats || { total: 0, byType: {}, byPriority: { high: 0, medium: 0, low: 0 } })
     } catch (error) {
       console.error('Error fetching approval items:', error)
-      
-      // Provide fallback sample data for testing
-      const sampleItems: ApprovalItem[] = [
-        {
-          id: '1',
-          type: 'tip',
-          title: 'Regular Equipment Maintenance Checks',
-          content: 'Ensure daily pre-operation inspections of all mining equipment to prevent costly breakdowns and maintain safety standards.',
-          aiGenerated: true,
-          createdAt: new Date().toISOString(),
-          category: 'maintenance',
-          priority: 'high',
-          status: 'pending'
-        },
-        {
-          id: '2',
-          type: 'faq',
-          title: 'What are the MHSA requirements for underground ventilation?',
-          content: 'Underground mines must maintain adequate ventilation as per MHSA regulations...',
-          aiGenerated: true,
-          createdAt: new Date().toISOString(),
-          category: 'safety',
-          priority: 'medium',
-          status: 'pending'
-        },
-        {
-          id: '3',
-          type: 'salary',
-          title: 'Mining Engineer - Johannesburg',
-          content: 'Salary estimate: R450,000 - R650,000 annually',
-          aiGenerated: true,
-          createdAt: new Date().toISOString(),
-          metadata: {
-            jobTitle: 'Mining Engineer',
-            salaryRange: 'R450,000 - R650,000',
-            region: 'Gauteng'
-          },
-          priority: 'low',
-          status: 'pending'
-        }
-      ]
-      
-      setItems(sampleItems)
-      setStats({
-        total: sampleItems.length,
-        byType: { tip: 1, faq: 1, salary: 1 },
-        byPriority: { high: 1, medium: 1, low: 1 }
-      })
-      
       toast({
-        title: "Note",
-        description: "Using sample approval data - Sanity CMS connection needed for live data",
-        variant: "default"
+        title: "Error",
+        description: "Failed to load approval queue",
+        variant: "destructive"
       })
     } finally {
       setLoading(false)
