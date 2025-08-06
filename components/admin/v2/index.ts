@@ -8,6 +8,6 @@ export { AnalyticsV2Widget } from './analytics-v2-widget';
 export { SystemMonitorWidget } from './system-monitor-widget';
 export { CommodityPriceBar } from './commodity-price-bar';
 export { NotificationCenter } from './notification-center';
-export { ApprovalQueueWidget } from './approval-queue-widget-v2';
+export { ApprovalQueueWidget } from './approval-queue-widget';
 export { ContentCreationPortal } from './content-creation-portal';
 export { SalaryInsightsWidget } from './salary-insights-widget';

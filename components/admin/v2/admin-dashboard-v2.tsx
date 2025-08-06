@@ -32,7 +32,7 @@ import {
 } from 'lucide-react'
 
 // Import widgets
-import { ApprovalQueueWidget } from '@/components/admin/v2/approval-queue-widget-v2'
+import { ApprovalQueueWidget } from '@/components/admin/v2/approval-queue-widget'
 import { VacanciesV2Widget } from '@/components/admin/v2/vacancies-v2-widget'
 import { BlogsV2Widget } from '@/components/admin/v2/blogs-v2-widget'
 import { RegulationV2Widget } from '@/components/admin/v2/regulation-v2-widget'
