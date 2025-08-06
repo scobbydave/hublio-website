@@ -25,7 +25,8 @@ import {
 } from 'lucide-react';
 
 interface RegulationArticle {
-  _id: string;
+  _id?: string;
+  _type: 'regulationArticle';
   title: string;
   slug: { current: string };
   body: any[];
@@ -111,10 +112,8 @@ export function RegulationArticles() {
       category: 'safety',
       region: 'South Africa',
       tags: ['safety', 'regulations', 'mining'],
-      author: 'System',
       createdAt: new Date().toISOString(),
-      status: 'published',
-      excerpt: 'Comprehensive overview of mine safety regulations in South Africa.'
+      published: true
     },
     {
       _id: '2',
@@ -125,10 +124,8 @@ export function RegulationArticles() {
       category: 'environmental',
       region: 'South Africa',
       tags: ['environment', 'compliance', 'mining'],
-      author: 'System',
       createdAt: new Date().toISOString(),
-      status: 'published',
-      excerpt: 'Essential environmental compliance requirements for mining companies.'
+      published: true
     },
     {
       _id: '3',
@@ -139,10 +136,8 @@ export function RegulationArticles() {
       category: 'labor-law',
       region: 'South Africa',
       tags: ['labor', 'law', 'mining'],
-      author: 'System',
       createdAt: new Date().toISOString(),
-      status: 'published',
-      excerpt: 'Key labor law requirements for mining operations and worker rights.'
+      published: true
     }
   ];
 

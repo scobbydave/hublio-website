@@ -23,7 +23,6 @@ export async function POST(request: NextRequest) {
       keyPoints: analysis.keyPoints,
       checklist: analysis.complianceChecklist,
       uploadedBy,
-      approved: false,
     });
 
     return NextResponse.json({

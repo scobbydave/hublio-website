@@ -1,0 +1,13 @@
+export { VacanciesV2Widget } from './vacancies-v2-widget';
+export { BlogsV2Widget } from './blogs-v2-widget';
+export { RegulationV2Widget } from './regulation-v2-widget';
+export { ResourceLibraryWidget } from './resource-library-widget';
+export { SupplierV2Widget } from './supplier-v2-widget';
+export { EventCalendarWidget } from './event-calendar-widget';
+export { AnalyticsV2Widget } from './analytics-v2-widget';
+export { SystemMonitorWidget } from './system-monitor-widget';
+export { CommodityPriceBar } from './commodity-price-bar';
+export { NotificationCenter } from './notification-center';
+export { ApprovalQueueWidget } from './approval-queue-widget-v2';
+export { ContentCreationPortal } from './content-creation-portal';
+export { SalaryInsightsWidget } from './salary-insights-widget';

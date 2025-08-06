@@ -52,12 +52,16 @@ interface AdminDashboardV2Props {
 
 type DashboardSection = 
   | 'overview' 
+  | 'content-portal'
+  | 'approval-queue'
   | 'vacancies' 
   | 'blogs' 
   | 'regulation' 
   | 'resources' 
   | 'suppliers' 
   | 'events' 
+  | 'salary-insights'
+  | 'analytics'
   | 'settings'
 
 interface DashboardStats {

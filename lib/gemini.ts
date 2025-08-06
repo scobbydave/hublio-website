@@ -153,6 +153,33 @@ The answer should be:
       throw new Error('Failed to generate FAQ answer');
     }
   }
+  // Generic content generation function for API routes
+  async generateContent(contentType: string, prompt: string): Promise<string> {
+    try {
+      const contextualPrompt = `${MINING_COMPLIANCE_CONTEXT}
+
+Generate ${contentType} content for a mining compliance platform:
+${prompt}
+
+Ensure the content is:
+- Professional and informative
+- Focused on mining industry compliance
+- Suitable for publication
+- Includes relevant disclaimers when necessary`;
+
+      const result = await this.model.generateContent(contextualPrompt);
+      const response = await result.response;
+      return response.text().trim();
+    } catch (error) {
+      console.error('Content generation error:', error);
+      throw new Error('Failed to generate content');
+    }
+  }
 }
 
 export const geminiService = new GeminiService();
+
+// Export the generate function for API routes
+export async function generateWithGemini(prompt: string, contentType?: string): Promise<string> {
+  return geminiService.generateContent(contentType || 'general', prompt);
+}
