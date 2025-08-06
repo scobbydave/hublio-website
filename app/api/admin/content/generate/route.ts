@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 }
 
 function generateTemplateContent(type: string, title: string, category?: string, region?: string) {
-  const templates = {
+  const templates: Record<string, { example: string; excerpt?: string }> = {
     blog: {
       example: `# ${title}
 
