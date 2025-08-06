@@ -32,20 +32,48 @@ export function AdminDashboard() {
 
   const fetchDashboardOverview = async () => {
     try {
-      // Simulate comprehensive dashboard stats
-      const mockStats: DashboardStats = {
-        totalLeads: 1247,
-        totalFAQs: 89,
-        totalBlogPosts: 156,
-        chatSessions: 2834,
-        faqSuggestions: 12,
-        jobMatchRequests: 456,
-        systemHealth: 96.8
-      }
+      // Fetch real stats from API
+      const response = await fetch('/api/admin/stats')
       
-      setStats(mockStats)
+      if (response.ok) {
+        const data = await response.json()
+        const realStats: DashboardStats = {
+          totalLeads: data.leads?.total || 0,
+          totalFAQs: data.faqs?.total || 0,
+          totalBlogPosts: data.blog?.total || 0,
+          chatSessions: data.analytics?.totalSessions || 0,
+          faqSuggestions: data.faqs?.aiGenerated || 0,
+          jobMatchRequests: data.vacancies?.total || 0,
+          systemHealth: 100 // Calculate based on successful API responses
+        }
+        setStats(realStats)
+      } else {
+        // Show empty state instead of dummy data
+        const emptyStats: DashboardStats = {
+          totalLeads: 0,
+          totalFAQs: 0,
+          totalBlogPosts: 0,
+          chatSessions: 0,
+          faqSuggestions: 0,
+          jobMatchRequests: 0,
+          systemHealth: 0
+        }
+        setStats(emptyStats)
+      }
     } catch (error) {
       console.error('Failed to fetch dashboard overview:', error)
+      
+      // Show empty state on error
+      const errorStats: DashboardStats = {
+        totalLeads: 0,
+        totalFAQs: 0,
+        totalBlogPosts: 0,
+        chatSessions: 0,
+        faqSuggestions: 0,
+        jobMatchRequests: 0,
+        systemHealth: 0
+      }
+      setStats(errorStats)
     } finally {
       setLoading(false)
     }

@@ -53,39 +53,30 @@ export function ChatAnalyticsWidget() {
         const data = await response.json()
         setAnalytics(data)
       } else {
-        // Fallback to basic analytics if API is not available
-        const today = new Date()
-        const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-        
-        const fallbackAnalytics: ChatAnalytics = {
-          totalSessions: 1247 + Math.floor(Math.random() * 100), // Add some variance
-          todaySessions: 38 + Math.floor(Math.random() * 20),
+        // Show empty state instead of dummy data
+        const emptyAnalytics: ChatAnalytics = {
+          totalSessions: 0,
+          todaySessions: 0,
           mostAskedQuestions: [
-            { question: "What are the current gold prices in ZAR?", count: 89, category: "Commodities" },
-            { question: "How to apply for mining permits in South Africa?", count: 67, category: "Regulation" },
-            { question: "What mining safety equipment is required?", count: 54, category: "Safety" },
-            { question: "Mining job opportunities in Johannesburg?", count: 43, category: "Employment" },
-            { question: "Environmental impact assessments for mining?", count: 38, category: "Environment" },
-            { question: "What are the mining tax implications?", count: 32, category: "Finance" },
-            { question: "How to find mining suppliers?", count: 28, category: "Procurement" }
+            { question: "No questions tracked yet", count: 0, category: "System" }
           ],
-          avgSessionDuration: 4.2 + (Math.random() - 0.5), // Add some variance
-          satisfactionRate: 87.3 + (Math.random() - 0.5) * 5 // 85-90% range
+          avgSessionDuration: 0,
+          satisfactionRate: 0
         }
-        setAnalytics(fallbackAnalytics)
+        setAnalytics(emptyAnalytics)
       }
     } catch (error) {
       console.error("Failed to fetch chat analytics:", error)
       
-      // Fallback analytics on error
+      // Empty state on error
       setAnalytics({
-        totalSessions: 1247,
-        todaySessions: 38,
+        totalSessions: 0,
+        todaySessions: 0,
         mostAskedQuestions: [
-          { question: "System currently updating analytics...", count: 0, category: "System" }
+          { question: "Analytics temporarily unavailable", count: 0, category: "System" }
         ],
-        avgSessionDuration: 4.2,
-        satisfactionRate: 87.3
+        avgSessionDuration: 0,
+        satisfactionRate: 0
       })
     }
   }

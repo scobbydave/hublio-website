@@ -63,57 +63,57 @@ export function AnalyticsV2Widget() {
         const data = await response.json()
         setAnalytics(data)
       } else {
-        // Fallback analytics data for development
-        const fallbackAnalytics: AnalyticsData = {
-          totalViews: 15420,
-          uniqueVisitors: 8932,
-          chatSessions: 1247,
+        // Show empty state instead of dummy data when API fails
+        const emptyAnalytics: AnalyticsData = {
+          totalViews: 0,
+          uniqueVisitors: 0,
+          chatSessions: 0,
           popularPages: [
+            {
+              path: '/',
+              name: 'Homepage',
+              views: 0,
+              change: 0
+            },
             {
               path: '/vacancies',
               name: 'Job Vacancies',
-              views: 3245,
-              change: +12.5
+              views: 0,
+              change: 0
             },
             {
               path: '/regulation',
               name: 'Regulation Hub',
-              views: 2876,
-              change: +8.3
+              views: 0,
+              change: 0
             },
             {
               path: '/blog',
               name: 'Mining Blog',
-              views: 2134,
-              change: -2.1
-            },
-            {
-              path: '/',
-              name: 'Homepage',
-              views: 4892,
-              change: +5.7
+              views: 0,
+              change: 0
             },
             {
               path: '/about',
               name: 'About Us',
-              views: 987,
-              change: +1.4
+              views: 0,
+              change: 0
             }
           ],
           userActivity: {
-            vacancyViews: 3245,
-            blogReads: 2134,
-            regulationHubUsage: 2876,
-            contactInquiries: 156
+            vacancyViews: 0,
+            blogReads: 0,
+            regulationHubUsage: 0,
+            contactInquiries: 0
           },
           trafficTrends: {
-            today: 542,
-            yesterday: 487,
-            thisWeek: 3821,
-            lastWeek: 3456
+            today: 0,
+            yesterday: 0,
+            thisWeek: 0,
+            lastWeek: 0
           }
         }
-        setAnalytics(fallbackAnalytics)
+        setAnalytics(emptyAnalytics)
       }
     } catch (error) {
       console.error('Error fetching analytics:', error)
