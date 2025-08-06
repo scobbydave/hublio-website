@@ -64,13 +64,28 @@ export function ApprovalQueueWidget() {
     try {
       setLoading(true)
       
-      // Fetch all pending approval items
+      // Fetch all pending approval items with proper error handling
       const [tipsRes, faqsRes, blogsRes, checklistsRes, documentsRes] = await Promise.allSettled([
-        fetch('/api/admin/approvals/tips'),
-        fetch('/api/admin/approvals/faqs'),
-        fetch('/api/admin/approvals/blogs'),
-        fetch('/api/admin/approvals/checklists'),
-        fetch('/api/admin/approvals/documents')
+        fetch('/api/admin/approvals/tips').catch(err => {
+          console.warn('Failed to fetch tips:', err)
+          return null
+        }),
+        fetch('/api/admin/approvals/faqs').catch(err => {
+          console.warn('Failed to fetch faqs:', err)
+          return null
+        }),
+        fetch('/api/admin/approvals/blogs').catch(err => {
+          console.warn('Failed to fetch blogs:', err)
+          return null
+        }),
+        fetch('/api/admin/approvals/checklists').catch(err => {
+          console.warn('Failed to fetch checklists:', err)
+          return null
+        }),
+        fetch('/api/admin/approvals/documents').catch(err => {
+          console.warn('Failed to fetch documents:', err)
+          return null
+        })
       ])
 
       const allItems: ApprovalItem[] = []
@@ -84,43 +99,63 @@ export function ApprovalQueueWidget() {
       }
 
       // Process tips
-      if (tipsRes.status === 'fulfilled' && tipsRes.value.ok) {
-        const data = await tipsRes.value.json()
-        const tips = data.items || []
-        newStats.tips = tips.length
-        allItems.push(...tips)
+      if (tipsRes.status === 'fulfilled' && tipsRes.value && tipsRes.value.ok) {
+        try {
+          const data = await tipsRes.value.json()
+          const tips = data.items || []
+          newStats.tips = tips.length
+          allItems.push(...tips)
+        } catch (error) {
+          console.warn('Failed to parse tips data:', error)
+        }
       }
 
       // Process FAQs
-      if (faqsRes.status === 'fulfilled' && faqsRes.value.ok) {
-        const data = await faqsRes.value.json()
-        const faqs = data.items || []
-        newStats.faqs = faqs.length
-        allItems.push(...faqs)
+      if (faqsRes.status === 'fulfilled' && faqsRes.value && faqsRes.value.ok) {
+        try {
+          const data = await faqsRes.value.json()
+          const faqs = data.items || []
+          newStats.faqs = faqs.length
+          allItems.push(...faqs)
+        } catch (error) {
+          console.warn('Failed to parse FAQs data:', error)
+        }
       }
 
       // Process blogs
-      if (blogsRes.status === 'fulfilled' && blogsRes.value.ok) {
-        const data = await blogsRes.value.json()
-        const blogs = data.items || []
-        newStats.blogs = blogs.length
-        allItems.push(...blogs)
+      if (blogsRes.status === 'fulfilled' && blogsRes.value && blogsRes.value.ok) {
+        try {
+          const data = await blogsRes.value.json()
+          const blogs = data.items || []
+          newStats.blogs = blogs.length
+          allItems.push(...blogs)
+        } catch (error) {
+          console.warn('Failed to parse blogs data:', error)
+        }
       }
 
       // Process checklists
-      if (checklistsRes.status === 'fulfilled' && checklistsRes.value.ok) {
-        const data = await checklistsRes.value.json()
-        const checklists = data.items || []
-        newStats.checklists = checklists.length
-        allItems.push(...checklists)
+      if (checklistsRes.status === 'fulfilled' && checklistsRes.value && checklistsRes.value.ok) {
+        try {
+          const data = await checklistsRes.value.json()
+          const checklists = data.items || []
+          newStats.checklists = checklists.length
+          allItems.push(...checklists)
+        } catch (error) {
+          console.warn('Failed to parse checklists data:', error)
+        }
       }
 
       // Process documents
-      if (documentsRes.status === 'fulfilled' && documentsRes.value.ok) {
-        const data = await documentsRes.value.json()
-        const documents = data.items || []
-        newStats.documents = documents.length
-        allItems.push(...documents)
+      if (documentsRes.status === 'fulfilled' && documentsRes.value && documentsRes.value.ok) {
+        try {
+          const data = await documentsRes.value.json()
+          const documents = data.items || []
+          newStats.documents = documents.length
+          allItems.push(...documents)
+        } catch (error) {
+          console.warn('Failed to parse documents data:', error)
+        }
       }
 
       // Sort by priority and date
@@ -136,53 +171,31 @@ export function ApprovalQueueWidget() {
       setItems(allItems)
       setStats(newStats)
 
-      // If no items, create some fallback demo data for development
-      if (allItems.length === 0) {
-        const demoItems: ApprovalItem[] = [
-          {
-            id: 'demo-1',
-            type: 'tip',
-            title: 'Safety Protocol Update',
-            content: 'New safety requirements for underground mining operations including enhanced ventilation systems and emergency response procedures.',
-            aiGenerated: true,
-            createdAt: new Date().toISOString(),
-            category: 'Safety',
-            priority: 'high'
-          },
-          {
-            id: 'demo-2',
-            type: 'faq',
-            title: 'What are the latest water use license requirements?',
-            content: 'Water use licenses now require quarterly monitoring reports and must include real-time water quality data from certified monitoring equipment.',
-            aiGenerated: true,
-            createdAt: new Date().toISOString(),
-            category: 'Environmental',
-            priority: 'medium'
-          },
-          {
-            id: 'demo-3',
-            type: 'blog',
-            title: 'Digital Transformation in Mining Compliance',
-            content: 'The mining industry is rapidly adopting digital technologies to streamline compliance processes and improve operational efficiency...',
-            aiGenerated: true,
-            createdAt: new Date().toISOString(),
-            category: 'Technology',
-            priority: 'low'
-          }
-        ]
-        setItems(demoItems)
-        setStats({
-          total: 3,
-          tips: 1,
-          faqs: 1,
-          blogs: 1,
-          checklists: 0,
-          documents: 0
-        })
-      }
+      // Log successful loading for debugging
+      console.log('Approval queue loaded:', {
+        totalItems: allItems.length,
+        stats: newStats,
+        fetchResults: {
+          tips: tipsRes.status === 'fulfilled' && tipsRes.value && tipsRes.value.ok,
+          faqs: faqsRes.status === 'fulfilled' && faqsRes.value && faqsRes.value.ok,
+          blogs: blogsRes.status === 'fulfilled' && blogsRes.value && blogsRes.value.ok,
+          checklists: checklistsRes.status === 'fulfilled' && checklistsRes.value && checklistsRes.value.ok,
+          documents: documentsRes.status === 'fulfilled' && documentsRes.value && documentsRes.value.ok,
+        }
+      })
 
     } catch (error) {
       console.error('Error fetching approval queue:', error)
+      // Set empty state on error rather than demo data
+      setItems([])
+      setStats({
+        total: 0,
+        tips: 0,
+        faqs: 0,
+        blogs: 0,
+        checklists: 0,
+        documents: 0
+      })
     } finally {
       setLoading(false)
     }
@@ -290,8 +303,9 @@ export function ApprovalQueueWidget() {
               </div>
             ) : items.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-32 text-muted-foreground">
-                <CheckCircle className="h-8 w-8 mb-2" />
-                <p>No items pending approval</p>
+                <CheckCircle className="h-8 w-8 mb-2 text-green-500" />
+                <p className="font-medium text-green-600">All caught up!</p>
+                <p className="text-sm">No items pending approval.</p>
               </div>
             ) : (
               <div className="space-y-3 pb-6">
