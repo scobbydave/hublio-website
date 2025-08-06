@@ -83,14 +83,15 @@ export default function VacanciesPage() {
               max: 650000,
               currency: 'ZAR'
             },
-            description: 'We are seeking an experienced Senior Mining Engineer to lead our underground mining operations. The successful candidate will be responsible for mine planning, safety compliance, and team leadership in our gold mining operations.',
+            description: 'We are seeking an experienced Senior Mining Engineer to lead our underground mining operations. The successful candidate will be responsible for mine planning, safety compliance, and team leadership in our gold mining operations. You will work with state-of-the-art technology and lead a team of 50+ mining professionals.',
             aiSummary: 'Senior-level position requiring extensive mining experience and leadership skills in underground gold mining operations.',
             requirements: [
               'Bachelor\'s degree in Mining Engineering',
               '8+ years of underground mining experience',
               'Professional registration with ECSA',
               'Strong leadership and communication skills',
-              'Experience with mine planning software'
+              'Experience with mine planning software (Surpac, Whittle, Datamine)',
+              'Knowledge of MHSA regulations and safety protocols'
             ],
             jobType: 'Full-time',
             experienceLevel: 'Senior',
@@ -109,14 +110,15 @@ export default function VacanciesPage() {
               max: 420000,
               currency: 'ZAR'
             },
-            description: 'Join our safety team to ensure compliance with mining safety regulations and maintain the highest safety standards. Responsible for conducting safety inspections, training programs, and incident investigations.',
+            description: 'Join our safety team to ensure compliance with mining safety regulations and maintain the highest safety standards. Responsible for conducting safety inspections, training programs, and incident investigations. This role is critical in maintaining our zero-harm vision and protecting our workforce.',
             aiSummary: 'Safety-focused role requiring strong knowledge of mining safety regulations and compliance procedures.',
             requirements: [
-              'National Diploma in Safety Management',
+              'National Diploma in Safety Management or related field',
               '5+ years mining safety experience',
               'SAMTRAC certification required',
-              'Knowledge of MHSA regulations',
-              'Strong analytical and reporting skills'
+              'Knowledge of MHSA regulations and DMR requirements',
+              'Strong analytical and reporting skills',
+              'Experience with safety management systems'
             ],
             jobType: 'Full-time',
             experienceLevel: 'Mid-level',
@@ -135,14 +137,15 @@ export default function VacanciesPage() {
               max: 480000,
               currency: 'ZAR'
             },
-            description: 'Analyze geological data to support mining operations and exploration activities. Work with advanced geological software and collaborate with multidisciplinary teams to optimize resource extraction.',
+            description: 'Analyze geological data to support mining operations and exploration activities. Work with advanced geological software and collaborate with multidisciplinary teams to optimize resource extraction. You will interpret drill core data, create geological models, and provide technical recommendations.',
             aiSummary: 'Technical role combining geology expertise with data analysis skills for mining optimization.',
             requirements: [
-              'BSc in Geology or related field',
-              '3+ years geological data analysis',
-              'Proficiency in geological modeling software',
-              'Strong statistical analysis skills',
-              'Experience with GIS systems'
+              'BSc in Geology, Geostatistics, or related field',
+              '3+ years geological data analysis experience',
+              'Proficiency in geological modeling software (Leapfrog, GEMS, Micromine)',
+              'Strong statistical analysis and geostatistics skills',
+              'Experience with GIS systems (ArcGIS, QGIS)',
+              'Knowledge of ore reserve estimation techniques'
             ],
             jobType: 'Full-time',
             experienceLevel: 'Mid-level',
@@ -161,14 +164,15 @@ export default function VacanciesPage() {
               max: 350000,
               currency: 'ZAR'
             },
-            description: 'Maintain and repair heavy mining equipment including excavators, haul trucks, and processing machinery. Ensure optimal equipment performance and minimize downtime through preventive maintenance.',
+            description: 'Maintain and repair heavy mining equipment including excavators, haul trucks, and processing machinery. Ensure optimal equipment performance and minimize downtime through preventive maintenance. Work with CAT, Komatsu, and Liebherr equipment in open pit coal mining operations.',
             aiSummary: 'Hands-on technical role focused on mining equipment maintenance and repair.',
             requirements: [
-              'Trade certificate in Mechanical Engineering',
-              '4+ years heavy equipment maintenance',
-              'Knowledge of hydraulic and electrical systems',
-              'Strong problem-solving abilities',
-              'Valid driver\'s license'
+              'Trade certificate in Mechanical or Electrical Engineering',
+              '4+ years heavy equipment maintenance experience',
+              'Knowledge of hydraulic, pneumatic, and electrical systems',
+              'Experience with CAT, Komatsu, or Liebherr equipment',
+              'Strong problem-solving and diagnostic abilities',
+              'Valid driver\'s license and willingness to work shifts'
             ],
             jobType: 'Full-time',
             experienceLevel: 'Mid-level',
@@ -187,14 +191,15 @@ export default function VacanciesPage() {
               max: 680000,
               currency: 'ZAR'
             },
-            description: 'Lead environmental compliance initiatives and ensure mining operations meet all environmental regulations. Develop sustainability programs and manage environmental impact assessments.',
+            description: 'Lead environmental compliance initiatives and ensure mining operations meet all environmental regulations. Develop sustainability programs and manage environmental impact assessments. Drive our commitment to responsible mining and community engagement.',
             aiSummary: 'Management position focused on environmental compliance and sustainability in diamond mining operations.',
             requirements: [
-              'MSc in Environmental Science or related',
-              '6+ years environmental compliance experience',
-              'Knowledge of mining environmental regulations',
-              'Project management experience',
-              'Strong stakeholder management skills'
+              'MSc in Environmental Science, Environmental Management, or related',
+              '6+ years environmental compliance experience in mining',
+              'Knowledge of NEMA, MPRDA, and other mining environmental regulations',
+              'Project management experience (PMP certification advantageous)',
+              'Strong stakeholder management and communication skills',
+              'Experience with EIA processes and water use licenses'
             ],
             jobType: 'Full-time',
             experienceLevel: 'Senior',
@@ -213,20 +218,130 @@ export default function VacanciesPage() {
               max: 280000,
               currency: 'ZAR'
             },
-            description: 'Entry-level surveying position supporting mining operations through accurate measurement and mapping. Great opportunity for recent graduates to start their mining career.',
+            description: 'Entry-level surveying position supporting mining operations through accurate measurement and mapping. Great opportunity for recent graduates to start their mining career. You will work both underground and on surface, using modern surveying equipment and software.',
             aiSummary: 'Entry-level surveying role perfect for new graduates entering the mining industry.',
             requirements: [
-              'National Diploma in Surveying',
-              '0-2 years surveying experience',
-              'Proficiency in surveying software',
-              'Strong attention to detail',
-              'Willingness to work underground'
+              'National Diploma or BTech in Mine Surveying',
+              '0-2 years surveying experience (graduates welcome)',
+              'Proficiency in surveying software (MineCAD, Surpac, AutoCAD)',
+              'Strong attention to detail and accuracy',
+              'Willingness to work underground and surface operations',
+              'Valid driver\'s license'
             ],
             jobType: 'Full-time',
             experienceLevel: 'Entry-level',
             category: 'Surveying & Mapping',
             postedDate: '2024-07-10',
             externalUrl: 'https://harmony.co.za/careers'
+          },
+          {
+            _id: '7',
+            title: 'Metallurgical Engineer - Processing Plant',
+            company: 'Impala Platinum',
+            location: 'Rustenburg',
+            country: 'South Africa',
+            salary: {
+              min: 420000,
+              max: 580000,
+              currency: 'ZAR'
+            },
+            description: 'Lead process optimization initiatives in our platinum concentrator plant. Responsible for improving metallurgical recovery, reducing operating costs, and implementing new technologies. Work with flotation, smelting, and refining processes.',
+            aiSummary: 'Technical engineering role focused on metallurgical process optimization in platinum processing.',
+            requirements: [
+              'BEng/BSc in Metallurgical or Chemical Engineering',
+              '5+ years metallurgical processing experience',
+              'Experience with PGM (Platinum Group Metals) processing',
+              'Knowledge of flotation, grinding, and hydrometallurgy',
+              'Strong analytical and problem-solving skills',
+              'Experience with process simulation software (HSC, JKSimMet)'
+            ],
+            jobType: 'Full-time',
+            experienceLevel: 'Mid-level',
+            category: 'Metallurgy & Processing',
+            postedDate: '2024-07-08',
+            externalUrl: 'https://implats.co.za/careers'
+          },
+          {
+            _id: '8',
+            title: 'Production Shift Supervisor',
+            company: 'Kumba Iron Ore',
+            location: 'Northern Cape',
+            country: 'South Africa',
+            salary: {
+              min: 380000,
+              max: 450000,
+              currency: 'ZAR'
+            },
+            description: 'Supervise production operations during shift work in our open pit iron ore mine. Manage a team of 30+ operators and ensure safe, efficient production targets are met. Coordinate with maintenance, geology, and planning departments.',
+            aiSummary: 'Supervisory role managing production operations and teams in open pit iron ore mining.',
+            requirements: [
+              'National Diploma in Mining or related field',
+              '4+ years mining operations experience',
+              '2+ years supervisory experience',
+              'Knowledge of open pit mining methods',
+              'Strong leadership and communication skills',
+              'Blasting certificate (advantageous)',
+              'First aid certification required'
+            ],
+            jobType: 'Full-time',
+            experienceLevel: 'Mid-level',
+            category: 'Operations & Production',
+            postedDate: '2024-07-05',
+            externalUrl: 'https://kumba.com/careers'
+          },
+          {
+            _id: '9',
+            title: 'Health & Safety Specialist - Underground',
+            company: 'AngloGold Ashanti',
+            location: 'Carletonville',
+            country: 'South Africa',
+            salary: {
+              min: 350000,
+              max: 450000,
+              currency: 'ZAR'
+            },
+            description: 'Specialist safety role focusing on underground mining operations. Develop and implement safety procedures, conduct risk assessments, and provide safety training. Critical role in maintaining our industry-leading safety performance.',
+            aiSummary: 'Specialized safety role for underground mining operations with focus on risk management and training.',
+            requirements: [
+              'BTech in Safety Management or related field',
+              '4+ years underground mining safety experience',
+              'SAMTRAC and other safety certifications',
+              'Knowledge of rock mechanics and geotechnical hazards',
+              'Experience with JSA, HIRA, and safety management systems',
+              'Strong training and presentation skills'
+            ],
+            jobType: 'Full-time',
+            experienceLevel: 'Mid-level',
+            category: 'Safety & Compliance',
+            postedDate: '2024-07-03',
+            externalUrl: 'https://anglogoldashanti.com/careers'
+          },
+          {
+            _id: '10',
+            title: 'Graduate Mining Engineer',
+            company: 'African Rainbow Minerals',
+            location: 'Various Locations',
+            country: 'South Africa',
+            salary: {
+              min: 280000,
+              max: 350000,
+              currency: 'ZAR'
+            },
+            description: 'Graduate development program for new mining engineers. Rotate through different departments including planning, operations, and projects. Excellent opportunity to develop skills across all aspects of mining operations with mentorship from senior engineers.',
+            aiSummary: 'Graduate program offering comprehensive mining engineering experience across multiple disciplines.',
+            requirements: [
+              'BEng/BSc in Mining Engineering (recent graduate)',
+              'Strong academic record',
+              'Internship or vacation work experience (advantageous)',
+              'Excellent communication and teamwork skills',
+              'Willingness to relocate and work in remote areas',
+              'Valid driver\'s license and passport'
+            ],
+            jobType: 'Full-time',
+            experienceLevel: 'Entry-level',
+            category: 'Mining Engineering',
+            postedDate: '2024-07-01',
+            externalUrl: 'https://arm.co.za/careers'
           }
         ]
         setVacancies(sampleVacancies)
