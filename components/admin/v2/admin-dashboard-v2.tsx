@@ -45,6 +45,7 @@ import { CommodityPriceBar } from '@/components/admin/v2/commodity-price-bar'
 import { NotificationCenter } from '@/components/admin/v2/notification-center'
 import { ContentCreationPortal } from '@/components/admin/v2/content-creation-portal'
 import { SalaryInsightsWidget } from '@/components/admin/v2/salary-insights-widget'
+import { SettingsPanel } from '@/components/admin/v2/settings-panel'
 
 interface AdminDashboardV2Props {
   initialKey?: string
@@ -296,16 +297,7 @@ export function AdminDashboardV2({ initialKey }: AdminDashboardV2Props) {
         return <AnalyticsV2Widget />
       
       case 'settings':
-        return (
-          <Card>
-            <CardHeader>
-              <CardTitle>Dashboard Settings</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Settings panel coming soon...</p>
-            </CardContent>
-          </Card>
-        )
+        return <SettingsPanel />
       
       default:
         return null

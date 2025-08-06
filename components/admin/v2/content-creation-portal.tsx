@@ -26,6 +26,7 @@ import {
   Save,
   Send,
   RefreshCw,
+  CheckCircle,
   Wand2
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -474,10 +475,329 @@ Tips for professional structure:
           </TabsContent>
 
           <TabsContent value="templates" className="mt-6">
-            <div className="text-center text-muted-foreground py-8">
-              <FileText className="h-12 w-12 mx-auto mb-2" />
-              <p>Content templates coming soon...</p>
-              <p className="text-sm">Pre-built templates for faster content creation</p>
+            <div className="space-y-6">
+              <h3 className="text-lg font-medium">Content Templates</h3>
+              
+              {/* Quick Start Templates */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
+                  setSelectedType('blog')
+                  updateForm('type', 'blog')
+                  updateForm('title', 'Mining Safety Best Practices')
+                  updateForm('category', 'Safety & Compliance')
+                  updateForm('content', `# Mining Safety Best Practices
+
+## Introduction
+Safety is paramount in mining operations. This guide covers essential safety practices that every mining professional should follow.
+
+## Key Safety Areas
+
+### 1. Personal Protective Equipment (PPE)
+- Always wear approved hard hats, safety glasses, and steel-toed boots
+- Use respiratory protection in dusty environments
+- Ensure high-visibility clothing in active areas
+
+### 2. Equipment Safety
+- Conduct pre-shift equipment inspections
+- Follow lockout/tagout procedures
+- Report any equipment malfunctions immediately
+
+### 3. Emergency Procedures
+- Know evacuation routes and assembly points
+- Understand emergency communication systems
+- Participate in regular safety drills
+
+## Conclusion
+By following these safety practices, we can ensure a safer workplace for everyone.`)
+                  setActiveTab('create')
+                }}>
+                  <CardContent className="p-4">
+                    <Shield className="h-8 w-8 text-blue-500 mb-2" />
+                    <h4 className="font-medium mb-1">Safety Guide Template</h4>
+                    <p className="text-sm text-muted-foreground">Comprehensive safety practices for mining operations</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
+                  setSelectedType('regulation')
+                  updateForm('type', 'regulation')
+                  updateForm('title', 'MHSA Compliance Checklist')
+                  updateForm('category', 'Mining Safety')
+                  updateForm('content', `# MHSA Compliance Checklist
+
+## Overview
+This checklist ensures compliance with the Mine Health and Safety Act requirements.
+
+## Pre-Operation Requirements
+
+### Documentation
+- [ ] Valid mining permit
+- [ ] Safety management plan
+- [ ] Emergency response plan
+- [ ] Employee training records
+
+### Equipment Inspections
+- [ ] Ventilation systems operational
+- [ ] Safety equipment tested
+- [ ] Communication systems functional
+- [ ] Emergency exits clearly marked
+
+### Personnel Requirements
+- [ ] Qualified mine managers appointed
+- [ ] Safety representatives elected
+- [ ] Medical certificates up to date
+- [ ] Safety training completed
+
+## Daily Operations
+
+### Before Each Shift
+- [ ] Safety briefings conducted
+- [ ] Equipment inspections completed
+- [ ] Weather conditions assessed
+- [ ] Personnel accounted for
+
+## Review and Updates
+This checklist should be reviewed monthly and updated as regulations change.`)
+                  setActiveTab('create')
+                }}>
+                  <CardContent className="p-4">
+                    <CheckCircle className="h-8 w-8 text-green-500 mb-2" />
+                    <h4 className="font-medium mb-1">MHSA Compliance</h4>
+                    <p className="text-sm text-muted-foreground">Ready-to-use compliance checklist</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
+                  setSelectedType('tip')
+                  updateForm('type', 'tip')
+                  updateForm('title', 'Equipment Maintenance Best Practice')
+                  updateForm('category', 'Operational')
+                  updateForm('content', `# Equipment Maintenance Best Practice
+
+## Quick Tip
+Schedule preventive maintenance during planned downtime rather than waiting for equipment failure.
+
+## Why It Matters
+- Prevents costly emergency repairs
+- Extends equipment lifespan
+- Reduces safety risks
+- Minimizes production interruptions
+
+## Implementation Steps
+1. Create maintenance schedules based on manufacturer recommendations
+2. Train maintenance staff on proper procedures
+3. Keep detailed maintenance logs
+4. Stock critical spare parts
+5. Review and update schedules quarterly
+
+## Expected Benefits
+Following this practice can reduce maintenance costs by up to 30% and increase equipment availability by 15%.`)
+                  setActiveTab('create')
+                }}>
+                  <CardContent className="p-4">
+                    <Lightbulb className="h-8 w-8 text-yellow-500 mb-2" />
+                    <h4 className="font-medium mb-1">Quick Tip Template</h4>
+                    <p className="text-sm text-muted-foreground">Short, actionable advice format</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
+                  setSelectedType('faq')
+                  updateForm('type', 'faq')
+                  updateForm('title', 'What are the ventilation requirements for underground mines?')
+                  updateForm('category', 'Safety')
+                  updateForm('content', `# What are the ventilation requirements for underground mines?
+
+## Question
+What are the specific ventilation requirements for underground mines according to MHSA regulations?
+
+## Answer
+
+### Minimum Air Volume Requirements
+- **Working places**: Minimum 0.05 m³/s per person
+- **Escape routes**: Minimum 0.3 m/s air velocity
+- **Main airways**: Calculated based on total personnel and equipment
+
+### Air Quality Standards
+- **Oxygen**: Minimum 19.5%
+- **Carbon monoxide**: Maximum 30 ppm
+- **Methane**: Maximum 1.25% in any location
+- **Hydrogen sulfide**: Maximum 10 ppm
+
+### Ventilation System Requirements
+1. **Primary ventilation**: Main fans with backup systems
+2. **Secondary ventilation**: Local fans for working areas
+3. **Monitoring systems**: Continuous air quality monitoring
+4. **Emergency ventilation**: Independent system for emergencies
+
+### Compliance Documentation
+- Ventilation plans must be submitted to the DMR
+- Regular air quality testing reports required
+- Fan performance testing documentation
+- Emergency ventilation system testing records
+
+### References
+- Mine Health and Safety Act, Section 12.5
+- DMR Guidelines on Ventilation in Mines
+- South African National Standards (SANS) 10228`)
+                  setActiveTab('create')
+                }}>
+                  <CardContent className="p-4">
+                    <HelpCircle className="h-8 w-8 text-purple-500 mb-2" />
+                    <h4 className="font-medium mb-1">FAQ Template</h4>
+                    <p className="text-sm text-muted-foreground">Structured question and answer format</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
+                  setSelectedType('event')
+                  updateForm('type', 'event')
+                  updateForm('title', 'Mining Safety Conference 2024')
+                  updateForm('category', 'Conference')
+                  updateForm('content', `# Mining Safety Conference 2024
+
+## Event Details
+- **Date**: March 15-17, 2024
+- **Time**: 8:00 AM - 5:00 PM daily
+- **Venue**: Sandton Convention Centre, Johannesburg
+- **Registration**: R2,500 per person (includes materials and meals)
+
+## About the Conference
+The premier mining safety event bringing together industry professionals, regulators, and technology providers to discuss the latest in mining safety practices and innovations.
+
+## Key Topics
+- **Digital Safety Solutions**: IoT sensors and real-time monitoring
+- **Regulatory Updates**: Latest MHSA amendments and compliance requirements
+- **Case Studies**: Success stories from leading mining companies
+- **Emergency Response**: Best practices and new technologies
+- **Mental Health**: Supporting worker wellbeing in mining
+
+## Featured Speakers
+- **Dr. Sarah Molefe**: Chief Inspector of Mines
+- **John Stevens**: Safety Director, Anglo American
+- **Prof. Peter van der Merwe**: University of the Witwatersrand
+- **Lisa Rodriguez**: Global Safety Manager, Rio Tinto
+
+## Registration
+Visit www.miningsafety2024.co.za or call 011-123-4567 to register.
+
+## Sponsors
+Gold Sponsors: Anglo American, Harmony Gold, Sibanye-Stillwater
+Silver Sponsors: DRDGold, African Rainbow Minerals`)
+                  setActiveTab('create')
+                }}>
+                  <CardContent className="p-4">
+                    <Calendar className="h-8 w-8 text-orange-500 mb-2" />
+                    <h4 className="font-medium mb-1">Event Template</h4>
+                    <p className="text-sm text-muted-foreground">Complete event information format</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => {
+                  setSelectedType('salary')
+                  updateForm('type', 'salary')
+                  updateForm('title', 'Mining Engineer - Senior Level')
+                  updateForm('category', 'Senior Level')
+                  updateForm('content', `# Mining Engineer - Senior Level Salary Insights
+
+## Position Overview
+Senior Mining Engineers lead complex mining projects and manage technical teams in underground or open-pit operations.
+
+## Salary Range
+- **Entry into Senior Level**: R650,000 - R800,000
+- **Experienced Senior**: R800,000 - R1,200,000  
+- **Principal/Lead**: R1,200,000 - R1,800,000
+
+## Factors Affecting Salary
+
+### Location
+- **Gauteng**: Above average due to corporate head offices
+- **North West**: Premium for Platinum Belt operations
+- **Limpopo**: Competitive rates for coal and platinum
+- **International**: 50-100% premium for African postings
+
+### Experience & Specialization
+- **Rock Engineering**: +10-15% premium
+- **Mine Planning**: High demand, competitive salaries
+- **Project Development**: +20% for new mine projects
+- **Digital Mining**: Emerging field with premium rates
+
+### Company Size
+- **Major Miners**: Higher base + excellent benefits
+- **Mid-tier**: Competitive with equity participation
+- **Junior Miners**: Variable, often equity-heavy
+- **Consulting**: Project-based, higher hourly rates
+
+## Additional Benefits
+- Medical aid (100% employer paid)
+- Pension/Provident fund (15-18% of salary)
+- 13th cheque standard
+- Performance bonuses (10-25% of annual salary)
+- Study assistance for professional development
+- Company vehicle or allowance
+
+## Career Progression
+Typical path: Junior → Intermediate → Senior → Principal → Engineering Manager → Mine Manager
+
+## Skills in Demand
+- Mine planning software (Surpac, Whittle, Deswik)
+- Rock mechanics and geotechnics
+- Project management (PMP certification)
+- Environmental compliance
+- Digital mining technologies`)
+                  setActiveTab('create')
+                }}>
+                  <CardContent className="p-4">
+                    <DollarSign className="h-8 w-8 text-green-600 mb-2" />
+                    <h4 className="font-medium mb-1">Salary Insights</h4>
+                    <p className="text-sm text-muted-foreground">Comprehensive salary and career information</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Template Categories */}
+              <div className="mt-8">
+                <h4 className="font-medium mb-4">Browse by Category</h4>
+                <div className="flex flex-wrap gap-2">
+                  {Object.entries(categories).map(([type, cats]) => (
+                    <Badge
+                      key={type}
+                      variant="outline"
+                      className="cursor-pointer hover:bg-primary hover:text-primary-foreground transition-colors"
+                      onClick={() => {
+                        setSelectedType(type)
+                        updateForm('type', type)
+                        setActiveTab('create')
+                      }}
+                    >
+                      {contentTypes.find(ct => ct.value === type)?.label}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* AI Template Generator */}
+              <Card className="mt-6">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Bot className="h-5 w-5" />
+                    AI Template Generator
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Describe what kind of content you need, and AI will create a custom template for you.
+                  </p>
+                  <Textarea
+                    placeholder="Example: Create a safety checklist for surface mining equipment inspection..."
+                    rows={3}
+                  />
+                  <Button>
+                    <Wand2 className="h-4 w-4 mr-2" />
+                    Generate Custom Template
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         </Tabs>
