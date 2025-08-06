@@ -97,8 +97,11 @@ export function AdminDashboardV2({ initialKey }: AdminDashboardV2Props) {
     try {
       setLoading(true)
       
+      // Get the admin key for API calls
+      const adminKey = initialKey || localStorage.getItem('adminKey') || 'hublio-secure-2024'
+      
       const [approvalRes, vacancyRes, blogRes, healthRes] = await Promise.allSettled([
-        fetch('/api/admin/approvals/stats'),
+        fetch(`/api/admin/approval-queue?key=${encodeURIComponent(adminKey)}`),
         fetch('/api/admin/vacancies/stats'),
         fetch('/api/admin/blogs/stats'),
         fetch('/api/admin/system/health')
@@ -108,7 +111,7 @@ export function AdminDashboardV2({ initialKey }: AdminDashboardV2Props) {
 
       if (approvalRes.status === 'fulfilled' && approvalRes.value.ok) {
         const data = await approvalRes.value.json()
-        newStats.pendingApprovals = data.pending || 0
+        newStats.pendingApprovals = data.stats?.total || 0
       }
 
       if (vacancyRes.status === 'fulfilled' && vacancyRes.value.ok) {

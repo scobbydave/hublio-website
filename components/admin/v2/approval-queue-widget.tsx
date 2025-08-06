@@ -64,124 +64,33 @@ export function ApprovalQueueWidget() {
     try {
       setLoading(true)
       
-      // Fetch all pending approval items with proper error handling
-      const [tipsRes, faqsRes, blogsRes, checklistsRes, documentsRes] = await Promise.allSettled([
-        fetch('/api/admin/approvals/tips').catch(err => {
-          console.warn('Failed to fetch tips:', err)
-          return null
-        }),
-        fetch('/api/admin/approvals/faqs').catch(err => {
-          console.warn('Failed to fetch faqs:', err)
-          return null
-        }),
-        fetch('/api/admin/approvals/blogs').catch(err => {
-          console.warn('Failed to fetch blogs:', err)
-          return null
-        }),
-        fetch('/api/admin/approvals/checklists').catch(err => {
-          console.warn('Failed to fetch checklists:', err)
-          return null
-        }),
-        fetch('/api/admin/approvals/documents').catch(err => {
-          console.warn('Failed to fetch documents:', err)
-          return null
-        })
-      ])
-
-      const allItems: ApprovalItem[] = []
-      const newStats: ApprovalStats = {
-        total: 0,
-        tips: 0,
-        faqs: 0,
-        blogs: 0,
-        checklists: 0,
-        documents: 0
+      // Get admin key from URL params or localStorage
+      const urlParams = new URLSearchParams(window.location.search)
+      const key = urlParams.get('key') || localStorage.getItem('adminKey') || 'hublio-secure-2024'
+      
+      const response = await fetch(`/api/admin/approval-queue?key=${encodeURIComponent(key)}`)
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error('Unauthorized access')
+        }
+        throw new Error('Failed to fetch approval queue')
       }
-
-      // Process tips
-      if (tipsRes.status === 'fulfilled' && tipsRes.value && tipsRes.value.ok) {
-        try {
-          const data = await tipsRes.value.json()
-          const tips = data.items || []
-          newStats.tips = tips.length
-          allItems.push(...tips)
-        } catch (error) {
-          console.warn('Failed to parse tips data:', error)
-        }
-      }
-
-      // Process FAQs
-      if (faqsRes.status === 'fulfilled' && faqsRes.value && faqsRes.value.ok) {
-        try {
-          const data = await faqsRes.value.json()
-          const faqs = data.items || []
-          newStats.faqs = faqs.length
-          allItems.push(...faqs)
-        } catch (error) {
-          console.warn('Failed to parse FAQs data:', error)
-        }
-      }
-
-      // Process blogs
-      if (blogsRes.status === 'fulfilled' && blogsRes.value && blogsRes.value.ok) {
-        try {
-          const data = await blogsRes.value.json()
-          const blogs = data.items || []
-          newStats.blogs = blogs.length
-          allItems.push(...blogs)
-        } catch (error) {
-          console.warn('Failed to parse blogs data:', error)
-        }
-      }
-
-      // Process checklists
-      if (checklistsRes.status === 'fulfilled' && checklistsRes.value && checklistsRes.value.ok) {
-        try {
-          const data = await checklistsRes.value.json()
-          const checklists = data.items || []
-          newStats.checklists = checklists.length
-          allItems.push(...checklists)
-        } catch (error) {
-          console.warn('Failed to parse checklists data:', error)
-        }
-      }
-
-      // Process documents
-      if (documentsRes.status === 'fulfilled' && documentsRes.value && documentsRes.value.ok) {
-        try {
-          const data = await documentsRes.value.json()
-          const documents = data.items || []
-          newStats.documents = documents.length
-          allItems.push(...documents)
-        } catch (error) {
-          console.warn('Failed to parse documents data:', error)
-        }
-      }
-
-      // Sort by priority and date
-      allItems.sort((a, b) => {
-        const priorityOrder = { high: 3, medium: 2, low: 1 }
-        if (priorityOrder[a.priority] !== priorityOrder[b.priority]) {
-          return priorityOrder[b.priority] - priorityOrder[a.priority]
-        }
-        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      })
-
-      newStats.total = allItems.length
-      setItems(allItems)
-      setStats(newStats)
-
-      // Log successful loading for debugging
-      console.log('Approval queue loaded:', {
-        totalItems: allItems.length,
-        stats: newStats,
-        fetchResults: {
-          tips: tipsRes.status === 'fulfilled' && tipsRes.value && tipsRes.value.ok,
-          faqs: faqsRes.status === 'fulfilled' && faqsRes.value && faqsRes.value.ok,
-          blogs: blogsRes.status === 'fulfilled' && blogsRes.value && blogsRes.value.ok,
-          checklists: checklistsRes.status === 'fulfilled' && checklistsRes.value && checklistsRes.value.ok,
-          documents: documentsRes.status === 'fulfilled' && documentsRes.value && documentsRes.value.ok,
-        }
+      
+      const data = await response.json()
+      
+      // Set items and stats from the API response
+      setItems(data.items || [])
+      
+      // Convert stats format to match widget expectations
+      const apiStats = data.stats || { total: 0, byType: {} }
+      setStats({
+        total: apiStats.total,
+        tips: apiStats.byType.tip || 0,
+        faqs: apiStats.byType.faq || 0,
+        blogs: apiStats.byType.blog || 0,
+        checklists: apiStats.byType.checklist || 0,
+        documents: apiStats.byType.document || 0
       })
 
     } catch (error) {
