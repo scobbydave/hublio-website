@@ -250,19 +250,8 @@ export default function VacanciesPage() {
       }
 
       setMatchResults(results)
+      setShowMatchDialog(false) // Close the dialog after successful matching
       toast.success('AI matching completed!')
-      
-      // Close the dialog after successful matching
-      setShowMatchDialog(false)
-      
-      // Scroll to results after a short delay
-      setTimeout(() => {
-        const resultsElement = document.getElementById('job-results')
-        if (resultsElement) {
-          resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }
-      }, 500)
-      
     } catch (error) {
       console.error('AI matching failed:', error)
       toast.error('AI matching failed')
@@ -295,6 +284,17 @@ export default function VacanciesPage() {
     if (score >= 40) return 'text-orange-600 bg-orange-50'
     return 'text-red-600 bg-red-50'
   }
+
+  // Sort vacancies with AI matches at the top
+  const sortedVacancies = Object.keys(matchResults).length > 0 
+    ? [...filteredVacancies].sort((a, b) => {
+        const scoreA = getMatchScore(a._id)
+        const scoreB = getMatchScore(b._id)
+        if (scoreA > 0 && scoreB === 0) return -1
+        if (scoreA === 0 && scoreB > 0) return 1
+        return scoreB - scoreA
+      })
+    : filteredVacancies
 
   if (loading) {
     return (
@@ -378,7 +378,7 @@ export default function VacanciesPage() {
                   <SelectTrigger>
                     <SelectValue placeholder="All categories" />
                   </SelectTrigger>
-                  <SelectContent className="z-50 max-h-[300px] overflow-y-auto">
+                  <SelectContent>
                     <SelectItem value="all">All categories</SelectItem>
                     <SelectItem value="Mining Engineering">Mining Engineering</SelectItem>
                     <SelectItem value="Safety & Compliance">Safety & Compliance</SelectItem>
@@ -396,7 +396,7 @@ export default function VacanciesPage() {
                   <SelectTrigger>
                     <SelectValue placeholder="All levels" />
                   </SelectTrigger>
-                  <SelectContent className="z-50 max-h-[300px] overflow-y-auto">
+                  <SelectContent>
                     <SelectItem value="all">All levels</SelectItem>
                     <SelectItem value="Entry-level">Entry Level</SelectItem>
                     <SelectItem value="Mid-level">Mid Level</SelectItem>
@@ -409,37 +409,47 @@ export default function VacanciesPage() {
 
             {/* AI Matching */}
             <div className="flex items-center gap-4">
-              <Dialog open={showMatchDialog} onOpenChange={setShowMatchDialog}>
+              <Dialog open={showMatchDialog} onOpenChange={(open) => {
+                setShowMatchDialog(open)
+                if (!open) {
+                  // Reset form when dialog closes
+                  setUserSkills('')
+                  setMatchingLoading(false)
+                }
+              }}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="gap-2">
+                  <Button variant="outline" className="gap-2 hover:bg-primary hover:text-primary-foreground transition-colors">
                     <Star className="h-4 w-4" />
                     AI Job Matching
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-lg">
+                <DialogContent className="sm:max-w-md">
                   <DialogHeader>
                     <DialogTitle>AI Job Matching</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-4">
-                    <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
-                      <p>🤖 <strong>Smart Job Matching:</strong> Our AI analyzes your skills against job requirements to find your best matches and provide personalized recommendations.</p>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm text-blue-800">
+                      <p>💡 <strong>Smart Job Matching:</strong> Our AI analyzes your skills against job requirements to find your best matches.</p>
                     </div>
                     <div>
                       <label className="text-sm font-medium mb-2 block">
                         Describe your skills, experience, and qualifications:
                       </label>
                       <Textarea
-                        placeholder="e.g., 5 years underground mining experience, safety certifications, equipment operation, team leadership, ore processing knowledge..."
+                        placeholder="e.g., 5 years underground mining experience, safety certifications, equipment operation, team leadership..."
                         value={userSkills}
-                        onChange={(e) => setUserSkills(e.target.value)}
-                        rows={5}
+                        onChange={(e) => {
+                          if (e.target.value.length <= 500) {
+                            setUserSkills(e.target.value)
+                          }
+                        }}
+                        rows={4}
                         className="resize-none"
                       />
-                      <p className="text-xs text-muted-foreground mt-1">
-                        Be specific about your mining experience, certifications, and technical skills for better matching.
-                      </p>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        {userSkills.length}/500 characters
+                      </div>
                     </div>
-                    
                     <div className="flex gap-2">
                       <Button 
                         onClick={handleAIMatch} 
@@ -447,51 +457,36 @@ export default function VacanciesPage() {
                         disabled={matchingLoading || !userSkills.trim()}
                       >
                         {matchingLoading ? (
-                          <>
-                            <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full mr-2"></div>
-                            Analyzing Jobs...
-                          </>
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                            Analyzing...
+                          </div>
                         ) : (
                           'Find My Best Matches'
                         )}
                       </Button>
-                      
-                      {Object.keys(matchResults).length > 0 && (
-                        <Button 
-                          variant="outline" 
-                          onClick={() => {
-                            setMatchResults({})
-                            setUserSkills('')
-                            toast.success('AI results cleared. Ready for new search!')
-                          }}
-                          className="flex-shrink-0"
-                        >
-                          Clear & Restart
-                        </Button>
-                      )}
+                      <Button 
+                        variant="outline" 
+                        onClick={() => setShowMatchDialog(false)}
+                        disabled={matchingLoading}
+                      >
+                        Cancel
+                      </Button>
                     </div>
-                    
-                    {Object.keys(matchResults).length > 0 && (
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-3 text-sm text-green-800">
-                        <p>✅ <strong>Analysis Complete!</strong> Found {Object.keys(matchResults).length} job matches. The dialog will close automatically to show your results.</p>
-                      </div>
-                    )}
                   </div>
                 </DialogContent>
               </Dialog>
 
               {Object.keys(matchResults).length > 0 && (
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">
-                    {Object.keys(matchResults).length} AI Matches Found
-                  </Badge>
+                  <span className="text-sm text-green-600 font-medium">
+                    ✨ {Object.keys(matchResults).length} AI matches found
+                  </span>
                   <Button 
                     variant="ghost" 
-                    onClick={() => {
-                      setMatchResults({})
-                      toast.success('AI matching results cleared')
-                    }}
-                    className="text-sm"
+                    size="sm"
+                    onClick={() => setMatchResults({})}
+                    className="text-sm hover:bg-destructive/10 hover:text-destructive"
                   >
                     Clear Results
                   </Button>
@@ -501,20 +496,26 @@ export default function VacanciesPage() {
           </div>
 
           {/* Results count */}
-          <div className="mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <p className="text-muted-foreground">
               Showing {filteredVacancies.length} of {vacancies.length} positions
               {Object.keys(matchResults).length > 0 && (
                 <span className="ml-2 text-sm text-green-600">
-                  • AI matching results shown
+                  • AI matching results shown (sorted by relevance)
                 </span>
               )}
             </p>
+            {Object.keys(matchResults).length > 0 && (
+              <div className="text-xs text-muted-foreground flex items-center gap-1">
+                <Star className="h-3 w-3 text-yellow-500" />
+                Best matches appear first
+              </div>
+            )}
           </div>
 
           {/* Professional Job Board */}
-          <div id="job-results" className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredVacancies.map((vacancy) => {
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {sortedVacancies.map((vacancy) => {
               const matchScore = getMatchScore(vacancy._id)
               const match = matchResults[vacancy._id]
               
