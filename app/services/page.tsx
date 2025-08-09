@@ -3,54 +3,116 @@ import { Footer } from "@/components/layout/footer"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Brain, Shield, TrendingUp, Database, Settings, HeadphonesIcon } from "lucide-react"
+import { 
+  Calendar, 
+  Shield, 
+  FileText, 
+  Users, 
+  Clock, 
+  Briefcase,
+  Bell,
+  Settings,
+  Activity,
+  UserCheck,
+  FolderOpen,
+  Stethoscope
+} from "lucide-react"
 
 const services = [
   {
-    title: "AI-Powered Analytics",
+    title: "Digital Leave Management",
     description:
-      "Advanced machine learning algorithms that analyze your mining data to provide actionable insights and optimize operations in real-time.",
-    icon: Brain,
-    features: ["Predictive maintenance", "Resource optimization", "Performance analytics", "Risk assessment"],
+      "Comprehensive leave application, approval, and tracking system with automated workflows, balance monitoring, and mobile accessibility for mining shift workers.",
+    icon: Calendar,
+    features: ["Online leave applications", "Multi-level approval workflows", "Real-time balance tracking", "Mobile-friendly interface", "Integration with payroll systems"],
     color: "primary",
   },
   {
-    title: "Safety Management Systems",
+    title: "Medical Appointment Booking",
     description:
-      "Comprehensive safety solutions that use AI to monitor conditions, predict hazards, and ensure compliance with safety regulations.",
-    icon: Shield,
-    features: ["Real-time monitoring", "Hazard prediction", "Compliance tracking", "Incident reporting"],
+      "Streamlined medical appointment scheduling with certificate management, approval workflows, and integration with clinic systems for occupational health compliance.",
+    icon: Stethoscope,
+    features: ["Appointment request system", "Medical certificate uploads", "Clinic integration", "Approval workflows", "Health compliance tracking"],
     color: "secondary",
   },
   {
-    title: "Operational Efficiency",
+    title: "Document Management System",
     description:
-      "Streamline your mining operations with intelligent automation and optimization tools that reduce costs and maximize productivity.",
-    icon: TrendingUp,
-    features: ["Process automation", "Resource allocation", "Downtime reduction", "Cost optimization"],
+      "Centralized document repository with secure access control, acknowledgment tracking, and compliance monitoring for safety and operational documents.",
+    icon: FileText,
+    features: ["Secure document storage", "Access control & permissions", "Document acknowledgments", "Version control", "Compliance reporting"],
     color: "primary",
   },
   {
-    title: "Data Integration",
+    title: "User Roles & Permissions",
     description:
-      "Seamlessly integrate data from multiple sources to create a unified view of your mining operations and enable better decision-making.",
-    icon: Database,
-    features: ["Multi-source integration", "Real-time dashboards", "Custom reporting", "Data visualization"],
+      "Sophisticated user management system with role-based access control, onboarding workflows, and comprehensive permission management for mining operations.",
+    icon: Users,
+    features: ["Role-based access control", "User onboarding workflows", "Permission management", "Department-based access", "Security audit trails"],
     color: "secondary",
   },
   {
-    title: "Custom Solutions",
+    title: "Clocking History Monitoring",
     description:
-      "Tailored AI solutions designed specifically for your unique mining challenges and operational requirements.",
+      "Comprehensive time and attendance tracking with shift monitoring, overtime calculations, and integration with existing clocking systems.",
+    icon: Clock,
+    features: ["Real-time clocking data", "Shift pattern tracking", "Overtime monitoring", "Attendance reports", "Integration capabilities"],
+    color: "primary",
+  },
+  {
+    title: "Job Vacancy Management",
+    description:
+      "Complete recruitment platform for posting positions, managing applications, and tracking candidate progress through the mining industry hiring process.",
+    icon: Briefcase,
+    features: ["Job posting system", "Application management", "Candidate tracking", "Interview scheduling", "Skills-based matching"],
+    color: "secondary",
+  },
+  {
+    title: "Content Publishing Platform",
+    description:
+      "Dynamic content management for wellness programs, safety updates, mining news, and health awareness campaigns with targeted distribution capabilities.",
+    icon: FolderOpen,
+    features: ["Content creation tools", "Targeted distribution", "Wellness programs", "Safety communications", "Engagement tracking"],
+    color: "primary",
+  },
+  {
+    title: "Smart Notification System",
+    description:
+      "Intelligent notification engine with workflow alerts, priority-based messaging, and multi-channel delivery for critical mining operations communications.",
+    icon: Bell,
+    features: ["Workflow notifications", "Priority-based alerts", "Multi-channel delivery", "Escalation procedures", "Read confirmations"],
+    color: "secondary",
+  },
+  {
+    title: "Employee Profile Management",
+    description:
+      "Comprehensive employee data management with skills tracking, certification monitoring, and career development pathways for mining professionals.",
+    icon: UserCheck,
+    features: ["Complete profile management", "Skills & certifications", "Career development", "Performance tracking", "Emergency contacts"],
+    color: "primary",
+  },
+  {
+    title: "Booking Management",
+    description:
+      "Versatile booking system for training sessions, safety inductions, equipment access, and facility reservations with automated confirmations.",
+    icon: Activity,
+    features: ["Multi-purpose booking system", "Automated confirmations", "Resource scheduling", "Capacity management", "Booking analytics"],
+    color: "secondary",
+  },
+  {
+    title: "System Configuration",
+    description:
+      "Flexible configuration tools for mine-specific settings, clinic setups, department structures, and operational parameters with admin controls.",
     icon: Settings,
-    features: ["Bespoke development", "Industry expertise", "Scalable architecture", "Ongoing support"],
+    features: ["Mine configuration", "Clinic setup", "Department management", "Operational parameters", "Admin dashboards"],
     color: "primary",
   },
   {
-    title: "24/7 Support",
-    description: "Round-the-clock technical support and consultation from our team of mining and AI experts.",
-    icon: HeadphonesIcon,
-    features: ["Emergency support", "Technical consultation", "Training programs", "Maintenance services"],
+    title: "Audit Logs & Compliance",
+    description:
+      "Comprehensive audit trail system ensuring POPIA compliance, data protection, and complete activity monitoring for regulatory requirements.",
+    icon: Shield,
+    features: ["Complete audit trails", "POPIA compliance", "Data protection", "Activity monitoring", "Compliance reporting"],
     color: "secondary",
   },
 ]
@@ -64,10 +126,11 @@ export default function ServicesPage() {
         <section className="py-20 lg:py-32 hublio-gradient">
           <div className="container">
             <div className="mx-auto max-w-4xl text-center text-white">
-              <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">Our Services</h1>
+              <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">Complete HR Platform</h1>
               <p className="mt-6 text-lg leading-8 opacity-90">
-                Comprehensive AI-powered solutions designed to transform your mining operations and drive sustainable
-                growth.
+                Comprehensive HR and operational platform designed specifically for mining companies. 
+                Streamline workforce management, enhance compliance, and improve operational efficiency 
+                with our integrated digital solutions.
               </p>
             </div>
           </div>

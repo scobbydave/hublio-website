@@ -9,14 +9,25 @@ export function Hero() {
         <div className="mx-auto max-w-4xl text-center">
           <AnimatedHeader>
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-             Streamline Mining & HR Operations with <span className="hublio-text-gradient">HUBLIO</span>
+             Transform Mining Operations with <span className="hublio-text-gradient">HUBLIO</span> HR Platform
             </h1>
           </AnimatedHeader>
           <AnimatedHeader delay={0.2}>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              Transform your mining operations with cutting-edge AI technology. Optimize efficiency, reduce costs, and
-              enhance safety with Hublio's enterprise-grade solutions.
+              The comprehensive mobile and web-based HR and operational platform designed specifically for mining companies. 
+              Streamline leave management, medical bookings, document control, clocking systems, and workforce operations 
+              with enterprise-grade security and POPIA compliance.
             </p>
+          </AnimatedHeader>
+          <AnimatedHeader delay={0.3}>
+            <div className="mt-6 flex flex-wrap justify-center gap-2 text-sm text-muted-foreground">
+              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Digital Leave Management</span>
+              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Medical Appointments</span>
+              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Document Management</span>
+              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">User Roles & Permissions</span>
+              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Clocking History</span>
+              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Job Vacancies</span>
+            </div>
           </AnimatedHeader>
           <AnimatedHeader delay={0.4}>
             <div className="mt-10 flex items-center justify-center gap-x-6">
@@ -33,7 +44,7 @@ export function Hero() {
                 asChild
                 className="border-primary/30 text-primary hover:bg-primary/10 hover:border-primary/50 transition-all duration-300"
               >
-                <Link href="/about">Learn More</Link>
+                <Link href="/services">View Features</Link>
               </Button>
             </div>
           </AnimatedHeader>
