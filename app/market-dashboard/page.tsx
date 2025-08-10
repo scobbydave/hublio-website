@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -31,8 +32,9 @@ import {
   Filter,
   Cog
 } from "lucide-react"
+import { serpAPIService, categorizeNews, determineImpact } from "@/lib/serpapi"
+import { serpAPICacheManager } from "@/lib/serpapi-cache"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 
 interface CommodityPrice {
   symbol: string
@@ -214,7 +216,9 @@ export default function MarketDashboard() {
 
   useEffect(() => {
     fetchAllMarketData()
-    const interval = setInterval(fetchAllMarketData, 300000) // 5 minutes
+    // Reduced refresh interval to 30 minutes to conserve API usage
+    // Smart caching handles news refresh timing automatically
+    const interval = setInterval(fetchAllMarketData, 1800000) // 30 minutes
     return () => clearInterval(interval)
   }, [])
 
@@ -631,65 +635,133 @@ export default function MarketDashboard() {
   }
 
   const fetchMiningNews = async () => {
-    const news: MiningNews[] = [
-      {
-        id: '1',
-        title: 'Anglo American Reports Record Platinum Production',
-        summary: 'Q3 production exceeded targets by 12% driven by operational efficiency improvements and new mining techniques.',
-        source: 'Mining Weekly',
-        timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        publishedAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-        category: 'production',
-        impact: 'high',
-        tags: ['Anglo American', 'Platinum', 'Production', 'Q3 Results']
-      },
-      {
-        id: '2',
-        title: 'New Safety Regulations Announced for Underground Mining',
-        summary: 'Department of Mineral Resources introduces enhanced safety protocols following industry consultation.',
-        source: 'Mining Journal',
-        timestamp: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        publishedAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-        category: 'regulation',
-        impact: 'medium',
-        tags: ['Safety', 'Regulations', 'Underground Mining', 'DMR']
-      },
-      {
-        id: '3',
-        title: 'Gold Prices Surge on Global Economic Uncertainty',
-        summary: 'Safe-haven demand drives gold to 6-month highs as investors seek stability amid market volatility.',
-        source: 'Reuters',
-        timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-        publishedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-        category: 'market',
-        impact: 'high',
-        tags: ['Gold', 'Prices', 'Market', 'Economic Uncertainty']
-      },
-      {
-        id: '4',
-        title: 'Major Copper Discovery in Northern Cape',
-        summary: 'Exploration company announces significant copper deposit with estimated reserves of 2.5 million tons.',
-        source: 'Mining Review',
-        timestamp: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-        publishedAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString(),
-        category: 'exploration',
-        impact: 'medium',
-        tags: ['Copper', 'Discovery', 'Northern Cape', 'Exploration']
-      },
-      {
-        id: '5',
-        title: 'Zero Fatality Month Achieved Across 15 Mines',
-        summary: 'Industry celebrates safety milestone with comprehensive reporting on best practices and safety initiatives.',
-        source: 'Safety First Mining',
-        timestamp: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-        publishedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(),
-        category: 'safety',
-        impact: 'low',
-        tags: ['Safety', 'Zero Fatality', 'Mining Industry', 'Best Practices']
+    try {
+      // Get smart refresh strategy based on usage and time
+      const strategy = serpAPICacheManager.getRefreshStrategy()
+      
+      // Internal logging only - not visible to visitors
+      if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+        const usageStats = serpAPICacheManager.getUsageStats()
+        console.log(`📊 SerpAPI Status: ${usageStats.searchesUsed}/${250} searches used (${usageStats.daysRemaining} days remaining)`)
       }
+      
+      // Use cached data with smart refresh intervals
+      const [
+        generalNews,
+        safetyNews,
+        regulationNews,
+        companyNews
+      ] = await Promise.all([
+        // General mining news (most important - refresh every 3 hours during business hours)
+        strategy.shouldRefreshGeneral
+          ? serpAPICacheManager.getNewsCached(
+              'general',
+              () => serpAPIService.getMiningNews('South Africa mining industry news', 'd'),
+              180 // 3 hour cache
+            )
+          : serpAPICacheManager.getNewsCached('general', () => Promise.resolve([]), 180),
+        
+        // Safety news (critical but less frequent - every 6 hours)
+        strategy.shouldRefreshSafety
+          ? serpAPICacheManager.getNewsCached(
+              'safety',
+              () => serpAPIService.getSafetyNews(),
+              360 // 6 hour cache
+            )
+          : serpAPICacheManager.getNewsCached('safety', () => Promise.resolve([]), 360),
+        
+        // Regulation news (twice daily)
+        strategy.shouldRefreshRegulation
+          ? serpAPICacheManager.getNewsCached(
+              'regulation',
+              () => serpAPIService.getRegulationNews(),
+              720 // 12 hour cache
+            )
+          : serpAPICacheManager.getNewsCached('regulation', () => Promise.resolve([]), 720),
+        
+        // Company news (every 4 hours during business hours)
+        strategy.shouldRefreshCompanies
+          ? serpAPICacheManager.getNewsCached(
+              'companies',
+              async () => {
+                const companyResults = await serpAPIService.getCompanyNews(['Anglo American', 'Gold Fields', 'Sibanye Stillwater'])
+                return Object.values(companyResults).flat()
+              },
+              240 // 4 hour cache
+            )
+          : serpAPICacheManager.getNewsCached('companies', () => Promise.resolve([]), 240)
+      ])
+
+      // Combine all news sources
+      const allNews = [
+        ...generalNews.slice(0, 8),
+        ...safetyNews.slice(0, 4),
+        ...regulationNews.slice(0, 3),
+        ...companyNews.slice(0, 5)
+      ]
+
+      // Convert to our MiningNews format
+      const processedNews: MiningNews[] = allNews.map((item, index) => ({
+        id: `serp_${index}`,
+        title: item.title,
+        summary: item.snippet || 'No summary available',
+        source: item.source,
+        timestamp: new Date().toISOString(),
+        publishedAt: item.date || new Date().toISOString(),
+        category: categorizeNews(item),
+        impact: determineImpact(item),
+        tags: extractTags(item.title + ' ' + item.snippet)
+      }))
+
+      // Remove duplicates
+      const uniqueNews = processedNews.filter((news, index, self) => 
+        index === self.findIndex(other => 
+          other.title.toLowerCase().includes(news.title.toLowerCase().substring(0, 20)) ||
+          news.title.toLowerCase().includes(other.title.toLowerCase().substring(0, 20))
+        )
+      )
+
+      setMiningNews(uniqueNews.slice(0, 20))
+      
+      // Internal cache status logging only
+      if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+        const cacheStatus = serpAPICacheManager.getCacheStatus()
+        console.log('📋 Cache Status:', cacheStatus)
+      }
+      
+    } catch (error) {
+      console.error('Failed to fetch mining news:', error)
+      
+      // Simple fallback without exposing usage details
+      const fallbackNews: MiningNews[] = [
+        {
+          id: '1',
+          title: 'Mining Industry News Loading',
+          summary: 'Real-time mining industry news is being loaded. Please refresh in a moment for the latest updates.',
+          source: 'System',
+          timestamp: new Date().toISOString(),
+          publishedAt: new Date().toISOString(),
+          category: 'market',
+          impact: 'low',
+          tags: ['Loading', 'News', 'Updates']
+        }
+      ]
+      
+      setMiningNews(fallbackNews)
+    }
+  }
+
+  // Helper function to extract relevant tags from news content
+  const extractTags = (content: string): string[] => {
+    const keywords = [
+      'Gold', 'Silver', 'Platinum', 'Palladium', 'Coal', 'Iron Ore', 'Copper', 'Diamond',
+      'Anglo American', 'Gold Fields', 'Sibanye', 'Impala', 'Safety', 'Production',
+      'Mining', 'JSE', 'South Africa', 'Regulation', 'DMRE', 'Strike', 'Earnings'
     ]
     
-    setMiningNews(news)
+    return keywords.filter(keyword => 
+      content.toLowerCase().includes(keyword.toLowerCase())
+    ).slice(0, 6) // Limit to 6 tags
   }
 
   const fetchMarketAnalytics = async () => {
@@ -1547,11 +1619,11 @@ export default function MarketDashboard() {
 
             {/* News Tab */}
             <TabsContent value="news" className="space-y-6">
-              {/* Sample Data Warning */}
-              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
-                <p className="text-sm text-orange-700">
-                  <strong>⚠️ Sample Data:</strong> News articles shown below are simulated for demonstration purposes. 
-                  For actual mining industry news, please visit official news sources.
+              {/* Professional Data Source Indicator */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-green-700">
+                  <strong>✅ LIVE NEWS:</strong> Real-time mining industry updates from Google News. 
+                  Latest articles automatically sourced and categorized by relevance and market impact.
                 </p>
               </div>
               

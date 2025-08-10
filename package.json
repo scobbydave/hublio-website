@@ -65,6 +65,7 @@
     "recharts": "2.15.0",
     "remark-gfm": "^4.0.1",
     "resend": "latest",
+    "serpapi": "^2.2.1",
     "sonner": "^1.7.1",
     "swr": "^2.3.4",
     "tailwind-merge": "^2.5.5",
