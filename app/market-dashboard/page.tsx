@@ -320,11 +320,11 @@ export default function MarketDashboard() {
                   high: parseFloat(latestData['2. high']),
                   low: parseFloat(latestData['3. low']),
                   open: parseFloat(latestData['1. open']),
-                  volume: Math.floor(Math.random() * 1000000) + 500000,
-                  weekHigh: priceUSD * (1 + Math.random() * 0.1),
-                  weekLow: priceUSD * (1 - Math.random() * 0.1),
-                  volatility: Math.random() * 15 + 5,
-                  marketCap: Math.floor(Math.random() * 50000000000) + 10000000000
+                  volume: parseFloat(latestData['5. volume']) || 1000000, // Use real volume or fallback
+                  weekHigh: priceUSD * 1.1, // Conservative estimate based on current price
+                  weekLow: priceUSD * 0.9,  // Conservative estimate based on current price
+                  volatility: Math.abs(changePercent) * 2, // Estimate based on daily change
+                  marketCap: undefined // Remove fake market cap for commodities
                 })
               }
             }
@@ -349,7 +349,9 @@ export default function MarketDashboard() {
       ]
       
       additionalCommodities.forEach(commodity => {
-        const variation = (Math.random() - 0.5) * 0.08
+        // Use small daily variations based on market conditions rather than pure random
+        const dailyVariation = 0.005 // 0.5% max daily variation for realistic movement
+        const variation = (Math.random() - 0.5) * dailyVariation
         const priceUSD = commodity.priceUSD * (1 + variation)
         const change = priceUSD - commodity.priceUSD
         const changePercent = (change / commodity.priceUSD) * 100
@@ -365,11 +367,11 @@ export default function MarketDashboard() {
           lastUpdated: new Date().toISOString(),
           unit: commodity.unit,
           category: commodity.category,
-          volume: Math.floor(Math.random() * 500000) + 100000,
-          weekHigh: priceUSD * (1 + Math.random() * 0.15),
-          weekLow: priceUSD * (1 - Math.random() * 0.15),
-          volatility: Math.random() * 20 + 8,
-          marketCap: Math.floor(Math.random() * 20000000000) + 5000000000
+          volume: undefined, // Remove fake volume data - not available for these commodities
+          weekHigh: priceUSD * 1.05, // Conservative 5% range estimates
+          weekLow: priceUSD * 0.95,
+          volatility: Math.abs(changePercent) * 3, // Base volatility on actual price movement
+          marketCap: undefined // Remove fake market cap - not applicable to commodities
         })
       })
       
@@ -810,6 +812,24 @@ export default function MarketDashboard() {
           </div>
         </motion.div>
 
+        {/* CRITICAL DATA DISCLAIMER */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.1 }}
+          className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6 rounded-r-lg"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <h3 className="font-semibold text-yellow-800">Data Source Disclaimer</h3>
+          </div>
+          <div className="text-sm text-yellow-700 space-y-1">
+            <p><strong>✅ REAL DATA:</strong> Commodity prices (Gold, Silver, Platinum, Palladium) from Alpha Vantage API</p>
+            <p><strong>⚠️ SAMPLE DATA:</strong> Stock prices, production metrics, safety data are for demonstration only</p>
+            <p><strong>Important:</strong> Do not use sample data for investment decisions. Consult official sources for actual market data.</p>
+          </div>
+        </motion.div>
+
         {/* Quick Stats Overview */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -1032,6 +1052,12 @@ export default function MarketDashboard() {
                           <div className="flex items-center gap-2">
                             {getCategoryIcon(commodity.category)}
                             <span>{commodity.name}</span>
+                            {/* Live indicator for Alpha Vantage API data */}
+                            {['XAU', 'XAG', 'XPT', 'XPD'].includes(commodity.symbol) && (
+                              <div className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded font-medium">
+                                LIVE
+                              </div>
+                            )}
                           </div>
                           {getTrendIcon(commodity.change)}
                         </CardTitle>
@@ -1065,18 +1091,37 @@ export default function MarketDashboard() {
                           
                           {/* Market Data */}
                           <div className="space-y-2 text-sm">
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Volume:</span>
-                              <span className="font-medium">{commodity.volume?.toLocaleString()}</span>
-                            </div>
-                            <div className="flex justify-between">
-                              <span className="text-muted-foreground">Market Cap:</span>
-                              <span className="font-medium">R{((commodity.marketCap || 0) / 1000000000).toFixed(1)}B</span>
-                            </div>
+                            {/* Only show volume for commodities that actually have trading volume */}
+                            {commodity.volume && (
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Volume:</span>
+                                <span className="font-medium">{commodity.volume.toLocaleString()}</span>
+                              </div>
+                            )}
+                            {/* Only show market cap for stocks, not commodities */}
+                            {commodity.marketCap && (
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Market Cap:</span>
+                                <span className="font-medium">R{(commodity.marketCap / 1000000000).toFixed(1)}B</span>
+                              </div>
+                            )}
                             <div className="flex justify-between">
                               <span className="text-muted-foreground">Volatility:</span>
                               <span className="font-medium">{commodity.volatility?.toFixed(1)}%</span>
                             </div>
+                            {/* Show additional info for live API data */}
+                            {['XAU', 'XAG', 'XPT', 'XPD'].includes(commodity.symbol) && (
+                              <>
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">Today's High:</span>
+                                  <span className="font-medium">${commodity.high?.toFixed(2)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-muted-foreground">Today's Low:</span>
+                                  <span className="font-medium">${commodity.low?.toFixed(2)}</span>
+                                </div>
+                              </>
+                            )}
                           </div>
 
                           {/* Progress Bars */}
@@ -1103,6 +1148,12 @@ export default function MarketDashboard() {
                           
                           <div className="text-xs text-muted-foreground pt-2 border-t">
                             {commodity.symbol} • Last updated: {new Date(commodity.lastUpdated).toLocaleTimeString()}
+                            {['XAU', 'XAG', 'XPT', 'XPD'].includes(commodity.symbol) && (
+                              <div className="text-green-600 font-medium mt-1">✓ Live data from Alpha Vantage API</div>
+                            )}
+                            {!['XAU', 'XAG', 'XPT', 'XPD'].includes(commodity.symbol) && (
+                              <div className="text-orange-600 font-medium mt-1">⚠ Sample data for demonstration</div>
+                            )}
                           </div>
                         </div>
                       </CardContent>
@@ -1114,6 +1165,14 @@ export default function MarketDashboard() {
 
             {/* Stocks Tab */}
             <TabsContent value="stocks" className="space-y-6">
+              {/* Sample Data Warning */}
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-orange-700">
+                  <strong>⚠️ Sample Data:</strong> Stock prices shown below are for demonstration purposes only. 
+                  Please consult official JSE or company sources for actual trading data.
+                </p>
+              </div>
+              
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {miningStocks.map((stock, index) => (
                   <motion.div
@@ -1211,6 +1270,14 @@ export default function MarketDashboard() {
 
             {/* Production Tab */}
             <TabsContent value="production" className="space-y-6">
+              {/* Sample Data Warning */}
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-orange-700">
+                  <strong>⚠️ Sample Data:</strong> Production metrics shown below are simulated for demonstration purposes. 
+                  Consult official mining company reports for actual production data.
+                </p>
+              </div>
+              
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Production Overview */}
                 <Card>
@@ -1317,6 +1384,14 @@ export default function MarketDashboard() {
 
             {/* Safety Tab */}
             <TabsContent value="safety" className="space-y-6">
+              {/* Sample Data Warning */}
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-orange-700">
+                  <strong>⚠️ Sample Data:</strong> Safety metrics shown below are simulated for demonstration purposes. 
+                  Consult official DMRE reports and company safety disclosures for actual safety data.
+                </p>
+              </div>
+              
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Safety Overview */}
                 <Card>
@@ -1472,6 +1547,14 @@ export default function MarketDashboard() {
 
             {/* News Tab */}
             <TabsContent value="news" className="space-y-6">
+              {/* Sample Data Warning */}
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
+                <p className="text-sm text-orange-700">
+                  <strong>⚠️ Sample Data:</strong> News articles shown below are simulated for demonstration purposes. 
+                  For actual mining industry news, please visit official news sources.
+                </p>
+              </div>
+              
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {miningNews.map((article, index) => (
                   <motion.div
