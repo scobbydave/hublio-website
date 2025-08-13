@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { GetServerSideProps } from 'next'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -41,14 +42,20 @@ interface JobMatch {
   missingSkills: string[]
 }
 
-export default function VacanciesPage() {
-  const [vacancies, setVacancies] = useState<Vacancy[]>([])
-  const [filteredVacancies, setFilteredVacancies] = useState<Vacancy[]>([])
-  const [loading, setLoading] = useState(true)
+interface VacanciesPageProps {
+  initialVacancies: Vacancy[]
+  error?: string
+}
+
+export default function VacanciesPage({ initialVacancies, error: serverError }: VacanciesPageProps) {
+  const [vacancies, setVacancies] = useState<Vacancy[]>(initialVacancies)
+  const [filteredVacancies, setFilteredVacancies] = useState<Vacancy[]>(initialVacancies)
+  const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [locationFilter, setLocationFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [experienceFilter, setExperienceFilter] = useState('all')
+  const [error, setError] = useState<string | null>(serverError || null)
   
   // AI Matching
   const [showMatchDialog, setShowMatchDialog] = useState(false)
@@ -86,141 +93,8 @@ export default function VacanciesPage() {
   }
 
   useEffect(() => {
-    fetchVacancies()
-  }, [])
-
-  useEffect(() => {
     filterVacancies()
   }, [vacancies, searchTerm, locationFilter, categoryFilter, experienceFilter])
-
-  const fetchVacancies = async () => {
-    try {
-      const response = await fetch('/api/vacancies')
-      const data = await response.json()
-      
-      // If no vacancies from API, use sample data
-      if (!data.vacancies || data.vacancies.length === 0) {
-        const sampleVacancies: Vacancy[] = [
-          {
-            _id: '1',
-            title: 'Senior Mining Engineer',
-            company: 'Gold Fields Limited',
-            location: 'Johannesburg',
-            country: 'South Africa',
-            salary: {
-              min: 450000,
-              max: 650000,
-              currency: 'ZAR'
-            },
-            description: 'We are seeking an experienced Senior Mining Engineer to lead our underground mining operations. The successful candidate will be responsible for mine planning, safety compliance, and team leadership in our gold mining operations. You will work with state-of-the-art technology and lead a team of 50+ mining professionals.',
-            aiSummary: 'Senior-level position requiring extensive mining experience and leadership skills in underground gold mining operations.',
-            requirements: [
-              'Bachelor\'s degree in Mining Engineering',
-              '8+ years of underground mining experience',
-              'Professional registration with ECSA',
-              'Strong leadership and communication skills',
-              'Experience with mine planning software (Surpac, Whittle, Datamine)',
-              'Knowledge of MHSA regulations and safety protocols'
-            ],
-            jobType: 'Full-time',
-            experienceLevel: 'Senior',
-            category: 'Mining Engineering',
-            postedDate: '2024-07-28',
-            externalUrl: 'https://goldfields.com/careers'
-          },
-          {
-            _id: '2',
-            title: 'Mine Safety Officer',
-            company: 'Anglo American',
-            location: 'Rustenburg',
-            country: 'South Africa',
-            salary: {
-              min: 320000,
-              max: 420000,
-              currency: 'ZAR'
-            },
-            description: 'Join our safety team to ensure compliance with mining safety regulations and maintain the highest safety standards. Responsible for conducting safety inspections, training programs, and incident investigations. This role is critical in maintaining our zero-harm vision and protecting our workforce.',
-            aiSummary: 'Safety-focused role requiring strong knowledge of mining safety regulations and compliance procedures.',
-            requirements: [
-              'National Diploma in Safety Management or related field',
-              '5+ years mining safety experience',
-              'SAMTRAC certification required',
-              'Knowledge of MHSA regulations and DMR requirements',
-              'Strong analytical and reporting skills',
-              'Experience with safety management systems'
-            ],
-            jobType: 'Full-time',
-            experienceLevel: 'Mid-level',
-            category: 'Safety & Compliance',
-            postedDate: '2024-07-25',
-            externalUrl: 'https://angloamerican.com/careers'
-          },
-          {
-            _id: '3',
-            title: 'Geological Data Analyst',
-            company: 'Sibanye-Stillwater',
-            location: 'Cape Town',
-            country: 'South Africa',
-            salary: {
-              min: 380000,
-              max: 480000,
-              currency: 'ZAR'
-            },
-            description: 'Analyze geological data to support mining operations and exploration activities. Work with advanced geological software and collaborate with multidisciplinary teams to optimize resource extraction. You will interpret drill core data, create geological models, and provide technical recommendations.',
-            aiSummary: 'Technical role combining geology expertise with data analysis skills for mining optimization.',
-            requirements: [
-              'BSc in Geology, Geostatistics, or related field',
-              '3+ years geological data analysis experience',
-              'Proficiency in geological modeling software (Leapfrog, GEMS, Micromine)',
-              'Strong statistical analysis and geostatistics skills',
-              'Experience with GIS systems (ArcGIS, QGIS)',
-              'Knowledge of ore reserve estimation techniques'
-            ],
-            jobType: 'Full-time',
-            experienceLevel: 'Mid-level',
-            category: 'Geology & Exploration',
-            postedDate: '2024-07-20',
-            externalUrl: 'https://sibanyestillwater.com/careers'
-          },
-          {
-            _id: '4',
-            title: 'Mining Equipment Technician',
-            company: 'Exxaro Resources',
-            location: 'Limpopo',
-            country: 'South Africa',
-            salary: {
-              min: 280000,
-              max: 350000,
-              currency: 'ZAR'
-            },
-            description: 'Maintain and repair heavy mining equipment including excavators, haul trucks, and processing machinery. Ensure optimal equipment performance and minimize downtime through preventive maintenance. Work with CAT, Komatsu, and Liebherr equipment in open pit coal mining operations.',
-            aiSummary: 'Hands-on technical role focused on mining equipment maintenance and repair.',
-            requirements: [
-              'Trade certificate in Mechanical or Electrical Engineering',
-              '4+ years heavy equipment maintenance experience',
-              'Knowledge of hydraulic, pneumatic, and electrical systems',
-              'Experience with CAT, Komatsu, or Liebherr equipment',
-              'Strong problem-solving and diagnostic abilities',
-              'Valid driver\'s license and willingness to work shifts'
-            ],
-            jobType: 'Full-time',
-            experienceLevel: 'Mid-level',
-            category: 'Equipment & Maintenance',
-            postedDate: '2024-07-15',
-            externalUrl: 'https://exxaro.com/careers'
-          }
-        ]
-        setVacancies(sampleVacancies)
-      } else {
-        setVacancies(data.vacancies)
-      }
-    } catch (error) {
-      console.error('Failed to fetch vacancies:', error)
-      toast.error('Failed to load vacancies')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleAIMatch = async () => {
     if (!userSkills.trim()) {
@@ -703,7 +577,7 @@ export default function VacanciesPage() {
             })}
           </div>
 
-          {filteredVacancies.length === 0 && (
+          {filteredVacancies.length === 0 && !error && (
             <div className="text-center py-12">
               <Briefcase className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">No vacancies found</h3>
@@ -712,9 +586,45 @@ export default function VacanciesPage() {
               </p>
             </div>
           )}
+
+          {filteredVacancies.length === 0 && error && (
+            <div className="text-center py-12">
+              <Briefcase className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+              <h3 className="text-lg font-medium mb-2">Unable to load vacancies</h3>
+              <p className="text-muted-foreground mb-4">
+                We're having trouble loading job listings. Please try again later.
+              </p>
+              <Button onClick={() => window.location.reload()} variant="outline">
+                Retry
+              </Button>
+            </div>
+          )}
         </div>
       </main>
       <Footer />
     </div>
   )
+}
+
+// Server-side data fetching
+export const getServerSideProps: GetServerSideProps<VacanciesPageProps> = async () => {
+  try {
+    // Fetch fresh vacancies with AI summaries
+    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/vacancies/fresh`)
+    const vacancies = response.ok ? await response.json() : []
+
+    return {
+      props: {
+        initialVacancies: Array.isArray(vacancies) ? vacancies : [],
+      },
+    }
+  } catch (error) {
+    console.error('Error fetching vacancies:', error)
+    return {
+      props: {
+        initialVacancies: [],
+        error: 'Failed to load job listings',
+      },
+    }
+  }
 }

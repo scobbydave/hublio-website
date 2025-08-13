@@ -6,6 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Users, MessageSquare, FileText, TrendingUp, RefreshCw } from "lucide-react"
+import { AITipsManagementWidget } from "./ai-tips-management-widget"
+import { AINewsManagementWidget } from "./ai-news-management-widget"
 
 interface DashboardStats {
   totalLeads: number
@@ -166,6 +168,8 @@ export function AdminDashboard() {
           <TabsTrigger value="activity">Recent Activity</TabsTrigger>
           <TabsTrigger value="leads">Lead Analytics</TabsTrigger>
           <TabsTrigger value="ai">AI Performance</TabsTrigger>
+          <TabsTrigger value="ai-tips">AI Safety Tips</TabsTrigger>
+          <TabsTrigger value="ai-news">AI News</TabsTrigger>
         </TabsList>
 
         <TabsContent value="activity">
@@ -267,6 +271,14 @@ export function AdminDashboard() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="ai-tips">
+          <AITipsManagementWidget />
+        </TabsContent>
+
+        <TabsContent value="ai-news">
+          <AINewsManagementWidget />
         </TabsContent>
       </Tabs>
     </div>
