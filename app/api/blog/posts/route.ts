@@ -188,14 +188,16 @@ async function getBlogPostsFromSanity() {
     // Dynamic import to avoid errors if Sanity is not configured
     const { sanityClient } = await import("@/lib/sanity")
 
-    const posts = await sanityClient.fetch(`*[_type == "blogPost"] | order(publishedAt desc) {
+    // The cron/AI generator creates documents with type `post` (see lib/ai/blog.ts and lib/sanity.createBlogPost)
+    // Query for `_type == "post"` so generated posts are returned by this API and appear on the site
+    const posts = await sanityClient.fetch(`*[_type == "post"] | order(publishedAt desc) {
       _id,
       title,
-      slug,
-      summary,
-      publishedAt,
-      sourceUrl,
-      "imageUrl": image.asset->url
+      "slug": slug.current,
+      "summary": excerpt,
+      "publishedAt": publishedAt,
+      "sourceUrl": sourceUrl,
+      "imageUrl": mainImage.asset->url
     }`)
 
     return posts || []

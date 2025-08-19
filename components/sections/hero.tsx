@@ -9,22 +9,22 @@ export function Hero() {
         <div className="mx-auto max-w-4xl text-center">
           <AnimatedHeader>
             <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-             Transform Mining Operations with <span className="hublio-text-gradient">HUBLIO</span> HR Platform
+              Improve Communication & Operations with <span className="hublio-text-gradient">HUBLIO</span>
             </h1>
           </AnimatedHeader>
           <AnimatedHeader delay={0.2}>
             <p className="mt-6 text-lg leading-8 text-muted-foreground">
-              The comprehensive mobile and web-based HR and operational platform designed specifically for mining companies. 
-              Streamline leave management, medical bookings, document control, clocking systems, and workforce operations 
-              with enterprise-grade security and POPIA compliance.
+              A communication-first platform for mining teams that keeps HR workflows intact.
+              Coordinate field crews, streamline HR processes like leave and medical bookings, and centralise documents and clocking data —
+              all with enterprise-grade security and POPIA compliance.
             </p>
           </AnimatedHeader>
           <AnimatedHeader delay={0.3}>
             <div className="mt-6 flex flex-wrap justify-center gap-2 text-sm text-muted-foreground">
+              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Communication & Field Coordination</span>
               <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Digital Leave Management</span>
               <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Medical Appointments</span>
               <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Document Management</span>
-              <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">User Roles & Permissions</span>
               <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Clocking History</span>
               <span className="bg-primary/10 text-primary px-3 py-1 rounded-full">Job Vacancies</span>
             </div>
