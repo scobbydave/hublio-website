@@ -22,13 +22,18 @@ export interface MiningNewsResponse {
 const SERPAPI_KEY = process.env.NEXT_PUBLIC_SERPAPI_KEY || process.env.SERPAPI_KEY
 
 export class SerpAPIService {
-  private apiKey: string
+  private apiKey: string | null
 
   constructor() {
-    if (!SERPAPI_KEY) {
-      throw new Error('SerpAPI key not found. Please set NEXT_PUBLIC_SERPAPI_KEY or SERPAPI_KEY environment variable.')
+    // Do not throw at import time. In local/dev builds we may not have SerpAPI keys.
+    // When keys are missing, methods will return empty arrays so builds and previews work.
+    this.apiKey = SERPAPI_KEY || null
+    if (!this.apiKey) {
+      // Keep a console hint for local debugging; production (Vercel) will have the key.
+      if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+        console.warn('SerpAPI key not found. SerpAPIService will return empty results until NEXT_PUBLIC_SERPAPI_KEY or SERPAPI_KEY is set.')
+      }
     }
-    this.apiKey = SERPAPI_KEY
   }
 
   /**
@@ -36,6 +41,7 @@ export class SerpAPIService {
    */
   async getMiningNews(query: string = 'mining industry news', timeRange: string = 'h'): Promise<NewsResult[]> {
     try {
+  if (!this.apiKey) return []
       const searchParams = new URLSearchParams({
         engine: "google_news",
         q: query,
@@ -66,6 +72,13 @@ export class SerpAPIService {
    */
   async getCompanyNews(companies: string[]): Promise<Record<string, NewsResult[]>> {
     const results: Record<string, NewsResult[]> = {}
+    if (!this.apiKey) {
+      // Return empty results when key is absent
+      for (const company of companies) {
+        results[company] = []
+      }
+      return results
+    }
 
     for (const company of companies) {
       try {
@@ -89,6 +102,12 @@ export class SerpAPIService {
    */
   async getCommodityNews(commodities: string[]): Promise<Record<string, NewsResult[]>> {
     const results: Record<string, NewsResult[]> = {}
+    if (!this.apiKey) {
+      for (const commodity of commodities) {
+        results[commodity] = []
+      }
+      return results
+    }
 
     for (const commodity of commodities) {
       try {

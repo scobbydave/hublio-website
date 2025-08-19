@@ -1,13 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
-
-const sanity = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET!,
-  apiVersion: '2024-01-01',
-  token: process.env.SANITY_API_TOKEN,
-  useCdn: false
-})
+import { validateSanityConnection, sanityClient } from '@/lib/sanity'
 
 export async function GET(request: NextRequest) {
   try {
@@ -58,7 +50,12 @@ export async function GET(request: NextRequest) {
       expiryDate
     }`
 
-    const vacancies = await sanity.fetch(query, params)
+    if (!validateSanityConnection() || !sanityClient) {
+      return NextResponse.json({ success: true, vacancies: [], count: 0 })
+    }
+
+    const client = sanityClient as any
+    const vacancies = await client.fetch(query, params)
 
     return NextResponse.json({
       success: true,
@@ -80,7 +77,12 @@ export async function POST(request: NextRequest) {
     const { action } = await request.json()
 
     if (action === 'stats') {
-      const stats = await sanity.fetch(`{
+      if (!validateSanityConnection() || !sanityClient) {
+        return NextResponse.json({ success: true, stats: { total: 0, active: 0, byCategory: [], byCountry: [], recent: [] } })
+      }
+
+      const client = sanityClient as any
+      const stats = await client.fetch(`{
         "total": count(*[_type == "vacancy"]),
         "active": count(*[_type == "vacancy" && isActive == true]),
         "byCategory": *[_type == "vacancy"] | {

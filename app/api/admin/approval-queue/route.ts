@@ -1,14 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSanityConnection } from '@/lib/sanity'
-import { createClient } from '@sanity/client'
-
-const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET || 'production',
-  token: process.env.SANITY_API_TOKEN!,
-  useCdn: false,
-  apiVersion: '2024-01-01',
-})
+import { validateSanityConnection, sanityClient as sanity } from '@/lib/sanity'
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,12 +11,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    if (!validateSanityConnection()) {
+    if (!validateSanityConnection() || !sanity) {
       return NextResponse.json({ error: 'Sanity not configured' }, { status: 500 })
     }
 
     // Fetch all pending approval items
-    const approvalItems = await sanityClient.fetch(`
+    const client = sanity as any
+    const approvalItems = await client.fetch(`
       *[_type == "approval" && status == "pending"] | order(createdAt desc) {
         _id,
         title,
@@ -56,7 +48,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Format items for response
-    const formattedItems = approvalItems.map((item: any) => ({
+  const formattedItems = approvalItems.map((item: any) => ({
       id: item._id,
       type: item.type,
       title: item.title,
@@ -71,10 +63,7 @@ export async function GET(request: NextRequest) {
       status: item.status
     }))
 
-    return NextResponse.json({
-      items: formattedItems,
-      stats
-    })
+  return NextResponse.json({ items: formattedItems, stats })
 
   } catch (error) {
     console.error('Error fetching approval queue:', error)

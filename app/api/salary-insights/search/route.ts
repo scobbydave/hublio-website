@@ -1,14 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSanityConnection } from '@/lib/sanity'
-import { createClient } from '@sanity/client'
-
-const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET || 'production',
-  token: process.env.SANITY_API_TOKEN!,
-  useCdn: false,
-  apiVersion: '2024-01-01',
-})
+import { validateSanityConnection, sanityClient } from '@/lib/sanity'
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,7 +8,7 @@ export async function GET(request: NextRequest) {
     const region = searchParams.get('region') || ''
     const experience = searchParams.get('experience') || ''
 
-    if (!validateSanityConnection()) {
+    if (!validateSanityConnection() || !sanityClient) {
       return NextResponse.json({ error: 'Database not available' }, { status: 500 })
     }
 
@@ -58,7 +49,8 @@ export async function GET(request: NextRequest) {
       searchCount
     }`
 
-    const results = await sanityClient.fetch(groqQuery, params)
+  const client = sanityClient as any
+  const results = await client.fetch(groqQuery, params)
 
     // Format results
     const formattedResults = results.map((result: any) => ({
@@ -76,7 +68,7 @@ export async function GET(request: NextRequest) {
     // Update search count for found results
     if (formattedResults.length > 0) {
       const updatePromises = formattedResults.map((result: any) => 
-        sanityClient.patch(result.id)
+        client.patch(result.id)
           .inc({ searchCount: 1 })
           .commit()
           .catch(() => {}) // Ignore update errors

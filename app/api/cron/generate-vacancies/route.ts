@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@sanity/client'
+import { validateSanityConnection, sanityClient as sanity } from '@/lib/sanity'
 import { generateJobSummary, extractJobSkills } from '@/lib/ai/jobs'
 
-const sanity = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET!,
-  apiVersion: '2024-01-01',
-  token: process.env.SANITY_API_TOKEN,
-  useCdn: false
-})
+// Note: use the shared sanity client from `lib/sanity` and guard usage with `validateSanityConnection()`
+// This avoids creating a client at module import time when env vars are not present.
 
 interface JobSearchResult {
   results: {
@@ -91,13 +86,23 @@ export async function POST(request: NextRequest) {
       await Promise.all(batch.map(async (job) => {
         try {
           // Check if job already exists
-          const existingJob = await sanity.fetch(
-            `*[_type == "vacancy" && externalId == $externalId][0]`,
-            { externalId: job.id }
-          )
+          // Check if Sanity is configured before attempting reads/writes
+          const hasSanity = validateSanityConnection() && !!sanity
 
-          if (existingJob) {
-            console.log(`Job ${job.id} already exists, skipping`)
+          if (hasSanity) {
+            const client = sanity as any
+            const existingJob = await client.fetch(
+              `*[_type == "vacancy" && externalId == $externalId][0]`,
+              { externalId: job.id }
+            )
+
+            if (existingJob) {
+              console.log(`Job ${job.id} already exists, skipping`)
+              return
+            }
+          } else {
+            console.log('Sanity not configured - skipping Sanity checks and writes for fetched jobs')
+            // If Sanity not configured, skip saving but continue processing other jobs
             return
           }
 
@@ -161,10 +166,15 @@ export async function POST(request: NextRequest) {
             createdAt: new Date().toISOString()
           }
 
-          // Save to Sanity
-          await sanity.create(vacancyDoc)
-          jobsProcessed++
-          console.log(`Processed job: ${job.title} at ${job.company.display_name}`)
+          // Save to Sanity (only when configured)
+          if (validateSanityConnection() && !!sanity) {
+            const client = sanity as any
+            await client.create(vacancyDoc)
+            jobsProcessed++
+            console.log(`Processed job: ${job.title} at ${job.company.display_name}`)
+          } else {
+            console.log(`Sanity not configured - would have created job: ${job.title} at ${job.company.display_name}`)
+          }
           
         } catch (error) {
           console.error(`Failed to process job ${job.id}:`, error)
@@ -178,15 +188,21 @@ export async function POST(request: NextRequest) {
     }
 
     // Clean up old/expired jobs
+    // Clean up old/expired jobs only when Sanity is configured
     try {
-      const oneWeekAgo = new Date()
-      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
-      
-      await sanity.delete({
-        query: `*[_type == "vacancy" && _createdAt < $date]`,
-        params: { date: oneWeekAgo.toISOString() }
-      })
-      console.log('Cleaned up old job listings')
+      if (validateSanityConnection() && !!sanity) {
+        const client = sanity as any
+        const oneWeekAgo = new Date()
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+
+        await client.delete({
+          query: `*[_type == "vacancy" && _createdAt < $date]`,
+          params: { date: oneWeekAgo.toISOString() }
+        })
+        console.log('Cleaned up old job listings')
+      } else {
+        console.log('Sanity not configured - skipping cleanup of old jobs')
+      }
     } catch (error) {
       console.error('Failed to clean up old jobs:', error)
     }

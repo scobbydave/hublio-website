@@ -1,14 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSanityConnection } from '@/lib/sanity'
-import { createClient } from '@sanity/client'
-
-const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET || 'production',
-  token: process.env.SANITY_API_TOKEN!,
-  useCdn: false,
-  apiVersion: '2024-01-01',
-})
+import { validateSanityConnection, sanityClient as sanity } from '@/lib/sanity'
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    if (!validateSanityConnection()) {
+    if (!validateSanityConnection() || !sanity) {
       // If Sanity is not available, just return success for testing
       console.log('Sanity not configured, returning mock success')
       return NextResponse.json({ 
@@ -34,7 +25,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Update approval status to rejected
-    const result = await sanityClient.patch(itemId)
+    const client = sanity as any
+    const result = await client.patch(itemId)
       .set({ 
         status: 'rejected',
         rejectedAt: new Date().toISOString(),

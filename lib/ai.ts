@@ -17,6 +17,9 @@ function getOpenAIClient(): OpenAI {
   return openaiClient
 }
 
+// Exported for other modules that need lazy access to the OpenAI client
+export { getOpenAIClient }
+
 export interface AIMessage {
   role: "user" | "assistant" | "system"
   content: string

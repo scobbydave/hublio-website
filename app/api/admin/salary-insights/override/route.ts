@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSanityConnection } from '@/lib/sanity'
-import { createClient } from '@sanity/client'
+import { validateSanityConnection, sanityClient as sharedSanityClient } from '@/lib/sanity'
 
-const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET || 'production',
-  token: process.env.SANITY_API_TOKEN!,
-  useCdn: false,
-  apiVersion: '2024-01-01',
-})
+// Use shared sanity client and validate configuration at runtime
+const sanity = sharedSanityClient
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,7 +24,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Update the salary insight with admin override
-    const result = await sanityClient.patch(insightId)
+    if (!validateSanityConnection()) {
+      return NextResponse.json({ error: 'Sanity not configured' }, { status: 500 })
+    }
+
+    const client = sanity as any
+    const result = await client.patch(insightId)
       .set({ 
         adminOverride: {
           min: override.min || 0,

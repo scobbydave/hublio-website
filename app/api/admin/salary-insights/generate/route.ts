@@ -1,15 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSanityConnection } from '@/lib/sanity'
+import { validateSanityConnection, sanityClient as sharedSanityClient } from '@/lib/sanity'
 import { generateWithGemini } from '@/lib/gemini'
-import { createClient } from '@sanity/client'
 
-const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET || 'production',
-  token: process.env.SANITY_API_TOKEN!,
-  useCdn: false,
-  apiVersion: '2024-01-01',
-})
+const sanity = sharedSanityClient
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,7 +24,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if salary insight already exists
-    const existing = await sanityClient.fetch(`
+  const client = sanity as any
+  const existing = await client.fetch(`
       *[_type == "salaryInsight" && jobTitle == $jobTitle && region == $region && experienceLevel == $experienceLevel][0]
     `, { jobTitle, region: region || 'South Africa', experienceLevel: experienceLevel || 'mid' })
 
@@ -98,7 +92,7 @@ Provide your response in this exact JSON format:
     }
 
     // Create salary insight in Sanity
-    const salaryInsight = await sanityClient.create({
+  const salaryInsight = await client.create({
       _type: 'salaryInsight',
       jobTitle,
       slug: { 

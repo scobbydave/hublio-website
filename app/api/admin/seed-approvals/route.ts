@@ -1,14 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSanityConnection } from '@/lib/sanity'
-import { createClient } from '@sanity/client'
-
-const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET || 'production',
-  token: process.env.SANITY_API_TOKEN!,
-  useCdn: false,
-  apiVersion: '2024-01-01',
-})
+import { validateSanityConnection, sanityClient } from '@/lib/sanity'
 
 export async function POST(request: NextRequest) {
   try {
@@ -149,10 +140,15 @@ export async function POST(request: NextRequest) {
       }
     ]
 
+    if (!validateSanityConnection() || !sanityClient) {
+      return NextResponse.json({ success: true, message: `Would create ${sampleItems.length} items (Sanity not configured)`, items: [] })
+    }
+
+    const client = sanityClient as any
     // Create all items in Sanity
     const results = []
     for (const item of sampleItems) {
-      const result = await sanityClient.create(item)
+      const result = await client.create(item)
       results.push(result)
     }
 

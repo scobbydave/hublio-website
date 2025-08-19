@@ -1,23 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSanityConnection } from '@/lib/sanity'
-import { createClient } from '@sanity/client'
-
-const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET || 'production',
-  token: process.env.SANITY_API_TOKEN!,
-  useCdn: false,
-  apiVersion: '2024-01-01',
-})
+import { validateSanityConnection, sanityClient } from '@/lib/sanity'
 
 export async function GET() {
   try {
-    if (!validateSanityConnection()) {
+    if (!validateSanityConnection() || !sanityClient) {
       return NextResponse.json({ error: 'Database not available' }, { status: 500 })
     }
 
     // Fetch most searched salary insights
-    const popularInsights = await sanityClient.fetch(`
+  const client = sanityClient as any
+  const popularInsights = await client.fetch(`
       *[_type == "salaryInsight" && approved == true && searchCount > 0] 
       | order(searchCount desc, createdAt desc) [0...8] {
         _id,

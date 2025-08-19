@@ -1,9 +1,15 @@
-import OpenAI from 'openai'
 import { huggingFaceService } from './huggingface'
+import { isAIAvailable, getOpenAIClient } from '../ai'
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-})
+// Lazily obtain OpenAI client when needed
+function getOpenAI() {
+  if (!isAIAvailable()) return null
+  try {
+    return getOpenAIClient()
+  } catch (e) {
+    return null
+  }
+}
 
 export interface JobMatchResult {
   score: number // 0-100
@@ -209,7 +215,10 @@ Format your response as JSON:
 }
 `
 
-    const response = await openai.chat.completions.create({
+  const openai = getOpenAI()
+  if (!openai) throw new Error('OpenAI not configured')
+
+  const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3,
@@ -278,7 +287,10 @@ ${jobDescription}
 Keep it professional and mining-industry focused.
 `
 
-    const response = await openai.chat.completions.create({
+  const openai = getOpenAI()
+  if (!openai) throw new Error('OpenAI not configured')
+
+  const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3,
@@ -310,7 +322,10 @@ Focus on:
 Format: ["skill1", "skill2", "skill3"]
 `
 
-    const response = await openai.chat.completions.create({
+  const openai = getOpenAI()
+  if (!openai) throw new Error('OpenAI not configured')
+
+  const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.3,

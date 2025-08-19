@@ -1,14 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSanityConnection } from '@/lib/sanity'
-import { createClient } from '@sanity/client'
+import { validateSanityConnection, sanityClient as sharedSanityClient } from '@/lib/sanity'
 
-const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET || 'production',
-  token: process.env.SANITY_API_TOKEN!,
-  useCdn: false,
-  apiVersion: '2024-01-01',
-})
+const sanity = sharedSanityClient
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,8 +17,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Sanity not configured' }, { status: 500 })
     }
 
+    const client = sanity as any
+
     // Fetch salary insights
-    const salaryInsights = await sanityClient.fetch(`
+    const salaryInsights = await client.fetch(`
       *[_type == "salaryInsight"] | order(createdAt desc) {
         _id,
         jobTitle,

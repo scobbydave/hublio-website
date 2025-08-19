@@ -1,14 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { validateSanityConnection } from '@/lib/sanity'
-import { createClient } from '@sanity/client'
-
-const sanityClient = createClient({
-  projectId: process.env.SANITY_PROJECT_ID!,
-  dataset: process.env.SANITY_DATASET || 'production',
-  token: process.env.SANITY_API_TOKEN!,
-  useCdn: false,
-  apiVersion: '2024-01-01',
-})
+import { validateSanityConnection, sanityClient as sanity } from '@/lib/sanity'
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,7 +10,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    if (!validateSanityConnection()) {
+    if (!validateSanityConnection() || !sanity) {
       // If Sanity is not available, just return success for testing
       console.log('Sanity not configured, returning mock success')
       return NextResponse.json({ 
@@ -33,8 +24,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Item ID required' }, { status: 400 })
     }
 
-    // Get the approval item
-    const approvalItem = await sanityClient.fetch(`
+  // Get the approval item
+  const client = sanity as any
+  const approvalItem = await client.fetch(`
       *[_type == "approval" && _id == $itemId][0] {
         _id,
         title,
@@ -54,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Update approval status
-    await sanityClient.patch(itemId)
+    await client.patch(itemId)
       .set({ 
         status: 'approved',
         approvedAt: new Date().toISOString(),
@@ -68,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     switch (approvalItem.type) {
       case 'blog':
-        publishedContent = await sanityClient.create({
+  publishedContent = await client.create({
           _type: 'blogPost',
           title: approvalItem.title,
           slug: { 
@@ -99,7 +91,7 @@ export async function POST(request: NextRequest) {
         break
 
       case 'tip':
-        publishedContent = await sanityClient.create({
+  publishedContent = await client.create({
           _type: 'complianceTip',
           title: approvalItem.title,
           description: approvalItem.content,
@@ -113,7 +105,7 @@ export async function POST(request: NextRequest) {
         break
 
       case 'faq':
-        publishedContent = await sanityClient.create({
+  publishedContent = await client.create({
           _type: 'regulationFAQ',
           question: approvalItem.title,
           answer: [
@@ -138,7 +130,7 @@ export async function POST(request: NextRequest) {
         break
 
       case 'regulation':
-        publishedContent = await sanityClient.create({
+  publishedContent = await client.create({
           _type: 'regulationArticle',
           title: approvalItem.title,
           slug: { 
@@ -169,7 +161,7 @@ export async function POST(request: NextRequest) {
         break
 
       case 'salary':
-        publishedContent = await sanityClient.create({
+  publishedContent = await client.create({
           _type: 'salaryInsight',
           jobTitle: approvalItem.title,
           slug: { 
@@ -195,7 +187,7 @@ export async function POST(request: NextRequest) {
         break
 
       case 'document':
-        publishedContent = await sanityClient.create({
+  publishedContent = await client.create({
           _type: 'documentAnalysis',
           fileName: approvalItem.metadata?.fileName || 'Document',
           summary: approvalItem.content,
