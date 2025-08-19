@@ -55,12 +55,19 @@ export async function POST(request: NextRequest) {
       })
       .commit()
 
-    // Create the actual content based on type
-    let publishedContent = null
+  // Create the actual content based on type
+  let publishedContent = null
 
     switch (approvalItem.type) {
       case 'blog':
-  publishedContent = await client.create({
+        // If the cron already created a published blog with the same title/external id, try to find it
+        const existingBlog = await client.fetch(`*[_type == 'post' && title == $title][0]`, { title: approvalItem.title })
+        if (existingBlog) {
+          publishedContent = existingBlog
+          break
+        }
+
+        publishedContent = await client.create({
           _type: 'blogPost',
           title: approvalItem.title,
           slug: { 

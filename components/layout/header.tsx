@@ -13,6 +13,7 @@ export function Header() {
   const [mounted, setMounted] = useState(false)
   const { theme, setTheme } = useTheme()
   const instagramLink = getSocialMediaLink("instagram")
+  const youtubeLink = getSocialMediaLink("youtube")
 
   // Avoid hydration mismatch
   useEffect(() => {
@@ -75,6 +76,12 @@ export function Header() {
             </Link>
           </Button>
 
+          <Button variant="ghost" size="icon" asChild className="hover:text-primary">
+            <Link href={youtubeLink.url} target="_blank" rel="noopener noreferrer" aria-label="Watch us on YouTube">
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a2.88 2.88 0 00-2.03-2.036C19.644 3.5 12 3.5 12 3.5s-7.644 0-9.468.65A2.88 2.88 0 00.502 6.186 29.84 29.84 0 000 12a29.84 29.84 0 00.502 5.814 2.88 2.88 0 002.03 2.036C4.356 20.5 12 20.5 12 20.5s7.644 0 9.468-.65a2.88 2.88 0 002.03-2.036A29.84 29.84 0 0024 12a29.84 29.84 0 00-.502-5.814zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
+            </Link>
+          </Button>
+
           <Button asChild className="bg-gradient-to-r from-[#FF6600] to-[#0066FF] text-white border-0 hover:opacity-90">
             <Link href="/contact">Get Started</Link>
           </Button>
@@ -121,6 +128,13 @@ export function Header() {
                 <Link href={instagramLink.url} target="_blank" rel="noopener noreferrer">
                   <Instagram className="h-4 w-4 mr-2" />
                   Follow on Instagram
+                </Link>
+              </Button>
+
+              <Button variant="ghost" size="sm" asChild className="w-full justify-start">
+                <Link href={youtubeLink.url} target="_blank" rel="noopener noreferrer">
+                  <svg className="h-4 w-4 mr-2" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a2.88 2.88 0 00-2.03-2.036C19.644 3.5 12 3.5 12 3.5s-7.644 0-9.468.65A2.88 2.88 0 00.502 6.186 29.84 29.84 0 000 12a29.84 29.84 0 00.502 5.814 2.88 2.88 0 002.03 2.036C4.356 20.5 12 20.5 12 20.5s7.644 0 9.468-.65a2.88 2.88 0 002.03-2.036A29.84 29.84 0 0024 12a29.84 29.84 0 00-.502-5.814zM9.75 15.02V8.98L15.5 12l-5.75 3.02z"/></svg>
+                  Watch on YouTube
                 </Link>
               </Button>
 

@@ -169,7 +169,27 @@ export async function POST(request: NextRequest) {
           // Save to Sanity (only when configured)
           if (validateSanityConnection() && !!sanity) {
             const client = sanity as any
-            await client.create(vacancyDoc)
+
+            // Ensure a slug for the vacancy so it can be referenced
+            const baseSlug = (job.title || 'vacancy')
+              .toLowerCase()
+              .replace(/[^a-z0-9\s-]/g, '')
+              .trim()
+              .replace(/\s+/g, '-')
+              .slice(0, 96)
+
+            // Avoid slug collisions by appending external id when needed
+            const slug = `${baseSlug}-${job.id}`
+
+            const doc = {
+              ...vacancyDoc,
+              slug: { _type: 'slug', current: slug },
+              published: true,
+              publishedAt: new Date().toISOString(),
+              isAIGenerated: true,
+            }
+
+            await client.create(doc)
             jobsProcessed++
             console.log(`Processed job: ${job.title} at ${job.company.display_name}`)
           } else {

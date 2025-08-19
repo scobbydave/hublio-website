@@ -1,5 +1,6 @@
 import { Hero } from "@/components/sections/hero"
 import { Features } from "@/components/sections/features"
+import LatestVideo from "@/components/sections/LatestVideo.server"
 import { Testimonials } from "@/components/sections/testimonials"
 import { SocialMediaSection } from "@/components/sections/social-media"
 import { Contact } from "@/components/sections/contact"
@@ -20,6 +21,7 @@ export default function HomePage() {
       <main>
         <Hero />
         <Features />
+  <LatestVideo channelUrl="https://youtube.com/@hublioapp?si=S6o_8LUtMFo68TRC" />
         <Testimonials />
         <Blog />
         <SocialMediaSection />

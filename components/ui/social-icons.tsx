@@ -15,6 +15,12 @@ export function SocialIcon({ platform, className = "h-5 w-5" }: SocialIconProps)
       return <MessageCircle className={className} />
     case "tiktok":
       return <Music className={className} />
+    case "youtube":
+      return (
+        <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+          <path d="M23.498 6.186a2.88 2.88 0 00-2.03-2.036C19.644 3.5 12 3.5 12 3.5s-7.644 0-9.468.65A2.88 2.88 0 00.502 6.186 29.84 29.84 0 000 12a29.84 29.84 0 00.502 5.814 2.88 2.88 0 002.03 2.036C4.356 20.5 12 20.5 12 20.5s7.644 0 9.468-.65a2.88 2.88 0 002.03-2.036A29.84 29.84 0 0024 12a29.84 29.84 0 00-.502-5.814zM9.75 15.02V8.98L15.5 12l-5.75 3.02z" />
+        </svg>
+      )
     case "website":
     case "globe":
       return <Globe className={className} />

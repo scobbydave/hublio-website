@@ -38,6 +38,12 @@ export const socialMediaLinks = {
     icon: "link",
     handle: "linktr.ee/Hublio",
   },
+  youtube: {
+    url: "https://youtube.com/@hublioapp?si=S6o_8LUtMFo68TRC",
+    label: "YouTube",
+    icon: "youtube",
+    handle: "@hublioapp",
+  },
 }
 
 export const socialMediaArray = Object.values(socialMediaLinks)

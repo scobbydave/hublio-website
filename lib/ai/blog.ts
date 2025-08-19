@@ -1,5 +1,5 @@
 import { isAIAvailable, getOpenAIClient, summarizeNewsArticle, generateBlogContent, summarizeNews } from "@/lib/ai"
-import { createBlogPost } from "@/lib/sanity"
+import { createBlogPost, validateSanityConnection, sanityClient } from "@/lib/sanity"
 
 function getOpenAI() {
   if (!isAIAvailable()) return null
@@ -198,8 +198,62 @@ export async function generateBlogFromNews(article: any, category = "Mining News
 
 // Generate multiple blog posts from news articles
 export async function generateBlogsFromNewsArticles(articles: any[], maxPosts = 3): Promise<BlogGenerationResult[]> {
-  // Use fallback generation for all articles in local builds
-  return articles.slice(0, maxPosts).map((a) => ({ success: true, blogPost: generateFallbackBlogPost(a.title, a) }))
+  const results: BlogGenerationResult[] = []
+
+  for (const article of articles.slice(0, maxPosts)) {
+    try {
+      // Generate content (fallback or AI-driven depending on environment)
+      const blog = await generateBlogPost({ topic: article.title, newsData: article })
+
+      // If Sanity is configured, create and publish the blog post
+      if (validateSanityConnection() && sanityClient) {
+        try {
+          const slug = (blog.title || article.title || 'post')
+            .toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .trim()
+            .replace(/\s+/g, '-')
+            .slice(0, 96)
+
+          const docToCreate: any = {
+            title: blog.title,
+            slug: { _type: 'slug', current: slug },
+            excerpt: blog.summary || blog.metaDescription || '',
+            // Store the generated HTML as a single text block to keep schema simple for fallback
+            content: [
+              {
+                _type: 'block',
+                children: [
+                  { _type: 'span', text: typeof blog.content === 'string' ? blog.content : JSON.stringify(blog.content) }
+                ]
+              }
+            ],
+            publishedAt: new Date().toISOString(),
+            published: true,
+            isAIGenerated: true,
+            category: blog.category || 'Mining Industry',
+            tags: blog.tags || ['mining', 'industry'],
+            readTime: blog.readTime,
+          }
+
+          const created = await createBlogPost(docToCreate as any)
+          results.push({ success: true, blogPost: created })
+          continue
+        } catch (err) {
+          console.error('Failed to create/publish blog post in Sanity:', err)
+          // Fall through to return generated blog object without creating
+        }
+      }
+
+      // Sanity not configured or creation failed — return generated content only
+      results.push({ success: true, blogPost: blog })
+    } catch (err) {
+      console.error('Error generating blog for article:', err)
+      results.push({ success: false, error: err instanceof Error ? err.message : String(err) })
+    }
+  }
+
+  return results
 }
 
 // Generate topic-based blog post

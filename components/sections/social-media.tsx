@@ -89,6 +89,26 @@ export function SocialMediaSection() {
               </Button>
             </CardContent>
           </Card>
+
+          {/* YouTube */}
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardContent className="p-6 text-center">
+              <div className="h-12 w-12 rounded-lg bg-red-600 flex items-center justify-center mx-auto mb-4">
+                <SocialIcon platform="youtube" className="h-6 w-6 text-white" />
+              </div>
+              <h3 className="font-semibold mb-2">YouTube</h3>
+              <p className="text-sm text-muted-foreground mb-4">Video tutorials, demos, and product walkthroughs</p>
+              <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground mb-4">
+                <TrendingUp className="h-4 w-4" />
+                <span>@hublioapp</span>
+              </div>
+              <Button variant="outline" size="sm" asChild>
+                <Link href="https://youtube.com/@hublioapp?si=S6o_8LUtMFo68TRC" target="_blank" rel="noopener noreferrer">
+                  Subscribe
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
         </div>
 
         {/* All Links CTA */}
