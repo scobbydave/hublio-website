@@ -217,7 +217,9 @@ export async function GET() {
       posts = await getBlogPostsFromSanity()
       if (posts && posts.length > 0) {
         console.log(`Blog API: Found ${posts.length} posts from Sanity`)
-        return NextResponse.json(posts)
+  const response = NextResponse.json(posts)
+  response.headers.set('Cache-Control', 'no-store')
+  return response
       }
     } catch (error) {
       console.log("Blog API: Sanity failed, trying News API")
@@ -227,11 +229,15 @@ export async function GET() {
     posts = await fetchRealMiningNews()
     console.log(`Blog API: Returning ${posts.length} posts`)
 
-    return NextResponse.json(posts)
+  const response = NextResponse.json(posts)
+  response.headers.set('Cache-Control', 'no-store')
+  return response
   } catch (error) {
     console.error("Blog API: Critical error:", error)
 
     // Always return fallback posts as last resort
-    return NextResponse.json(fallbackPosts)
+  const response = NextResponse.json(fallbackPosts)
+  response.headers.set('Cache-Control', 'no-store')
+  return response
   }
 }

@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { validateSanityConnection, sanityClient } from '@/lib/sanity'
 
 export async function GET(request: NextRequest) {
@@ -9,7 +8,7 @@ export async function GET(request: NextRequest) {
     const experienceLevel = searchParams.get('experience')
     const limit = parseInt(searchParams.get('limit') || '50')
 
-    let query = `*[_type == "vacancy" && isActive == true]`
+  let query = `*[_type == "vacancy"]`
     const params: any = {}
 
     // Add filters
