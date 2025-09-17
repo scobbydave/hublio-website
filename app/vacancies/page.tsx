@@ -24,25 +24,10 @@ interface Vacancy {
 // Server component to fetch fresh data with cache revalidation
 async function getVacanciesData(): Promise<{ initialVacancies: Vacancy[], error?: string }> {
   try {
-    // Fetch fresh vacancies with AI summaries - force revalidation every 5 minutes
-    const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/vacancies/fresh`, {
-      next: { 
-        revalidate: 300, // Revalidate every 5 minutes
-        tags: ['vacancy-data', 'fresh-vacancies']
-      },
-      headers: {
-        'Cache-Control': 'no-cache, no-store, max-age=0'
-      }
-    })
-    
-    if (!response.ok) {
-      throw new Error(`API responded with status: ${response.status}`)
-    }
-    
-    const vacancies = await response.json()
-
+    // Return empty vacancies to avoid SSR fetch issues for now
+    // Client-side will handle loading dynamic content
     return {
-      initialVacancies: Array.isArray(vacancies) ? vacancies : [],
+      initialVacancies: [],
     }
   } catch (error) {
     console.error('Error fetching vacancies:', error)
@@ -53,9 +38,9 @@ async function getVacanciesData(): Promise<{ initialVacancies: Vacancy[], error?
   }
 }
 
-// Force dynamic rendering and revalidation  
-export const dynamic = 'force-dynamic'
-export const revalidate = 300 // Revalidate every 5 minutes
+// Remove dynamic rendering to prevent SSR issues
+export const dynamic = 'auto'
+export const revalidate = false
 
 export default async function VacanciesPage() {
   const { initialVacancies, error } = await getVacanciesData()

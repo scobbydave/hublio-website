@@ -34,8 +34,52 @@ export function BlogPageClient({ initialPosts, newsArticles, error: serverError 
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [error, setError] = useState<string | null>(serverError || null)
   const [refreshing, setRefreshing] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [posts, setPosts] = useState(initialPosts)
   const [news, setNews] = useState(newsArticles)
+
+  // Load initial content on mount
+  useEffect(() => {
+    const loadInitialContent = async () => {
+      if (news.length === 0) {
+        try {
+          setLoading(true)
+          const response = await fetch('/api/blog/news-feed', {
+            cache: 'no-store'
+          })
+          if (response.ok) {
+            const freshNews = await response.json()
+            // Transform to expected format
+            const transformedNews = Array.isArray(freshNews) ? freshNews.map((article: any) => ({
+              title: article.title || '',
+              summary: article.aiSummary || article.description || '',
+              date: article.publishedAt || new Date().toISOString(),
+              slug: article.url ? new URL(article.url).pathname : '',
+              readTime: '2 min read',
+              category: 'AI Summarized News',
+              sourceUrl: article.url,
+              imageUrl: article.urlToImage,
+              source: article.source?.name || 'Mining News',
+              isAIGenerated: true
+            })) : []
+            setNews(transformedNews)
+            setError(null)
+          } else {
+            setError('Failed to load blog content')
+          }
+        } catch (error) {
+          console.error('Failed to load initial content:', error)
+          setError('Failed to load blog content')
+        } finally {
+          setLoading(false)
+        }
+      } else {
+        setLoading(false)
+      }
+    }
+
+    loadInitialContent()
+  }, [])
 
   // Auto-refresh content every 5 minutes
   useEffect(() => {
@@ -47,7 +91,20 @@ export function BlogPageClient({ initialPosts, newsArticles, error: serverError 
         })
         if (response.ok) {
           const freshNews = await response.json()
-          setNews(freshNews)
+          // Transform to expected format
+          const transformedNews = Array.isArray(freshNews) ? freshNews.map((article: any) => ({
+            title: article.title || '',
+            summary: article.aiSummary || article.description || '',
+            date: article.publishedAt || new Date().toISOString(),
+            slug: article.url ? new URL(article.url).pathname : '',
+            readTime: '2 min read',
+            category: 'AI Summarized News',
+            sourceUrl: article.url,
+            imageUrl: article.urlToImage,
+            source: article.source?.name || 'Mining News',
+            isAIGenerated: true
+          })) : []
+          setNews(transformedNews)
           console.log('✅ Blog content refreshed')
         }
       } catch (error) {
@@ -79,14 +136,14 @@ export function BlogPageClient({ initialPosts, newsArticles, error: serverError 
     }
   }
   
-  // Combine Sanity posts with AI-summarized news
-  const allPosts = [...initialPosts, ...newsArticles]
+  // Combine all content for filtering
+  const allPosts = [...posts, ...news]
 
   const filteredPosts =
     selectedCategory === "All" 
       ? allPosts 
       : selectedCategory === "AI Summarized News"
-      ? newsArticles
+      ? news
       : allPosts.filter((post) => post.category === selectedCategory)
 
   const featuredPost = filteredPosts[0]
@@ -148,9 +205,19 @@ export function BlogPageClient({ initialPosts, newsArticles, error: serverError 
                   <div className="flex-1">
                     <p className="text-sm text-yellow-800">{error}</p>
                   </div>
-                  <Button onClick={() => window.location.reload()} variant="outline" size="sm">
-                    <RefreshCw className="h-4 w-4" />
+                  <Button onClick={handleRefresh} variant="outline" size="sm" disabled={refreshing}>
+                    <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
                   </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Loading State */}
+            {loading && (
+              <div className="mb-8 text-center">
+                <div className="inline-flex items-center px-4 py-2 bg-muted rounded-lg">
+                  <RefreshCw className="h-4 w-4 animate-spin mr-2" />
+                  <span>Loading fresh mining news...</span>
                 </div>
               </div>
             )}

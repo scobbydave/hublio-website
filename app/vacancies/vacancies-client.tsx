@@ -49,7 +49,7 @@ interface VacanciesPageClientProps {
 export function VacanciesPageClient({ initialVacancies, error: serverError }: VacanciesPageClientProps) {
   const [vacancies, setVacancies] = useState<Vacancy[]>(initialVacancies)
   const [filteredVacancies, setFilteredVacancies] = useState<Vacancy[]>(initialVacancies)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
   const [locationFilter, setLocationFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
@@ -61,6 +61,38 @@ export function VacanciesPageClient({ initialVacancies, error: serverError }: Va
   const [userSkills, setUserSkills] = useState('')
   const [matchResults, setMatchResults] = useState<{ [key: string]: JobMatch }>({})
   const [matchingLoading, setMatchingLoading] = useState(false)
+
+  // Load initial content on mount
+  useEffect(() => {
+    const loadInitialContent = async () => {
+      if (vacancies.length === 0) {
+        try {
+          setLoading(true)
+          const response = await fetch('/api/vacancies/fresh', {
+            cache: 'no-store'
+          })
+          if (response.ok) {
+            const freshVacancies = await response.json()
+            const validVacancies = Array.isArray(freshVacancies) ? freshVacancies : []
+            setVacancies(validVacancies)
+            setFilteredVacancies(validVacancies)
+            setError(null)
+          } else {
+            setError('Failed to load job listings')
+          }
+        } catch (error) {
+          console.error('Failed to load initial vacancies:', error)
+          setError('Failed to load job listings')
+        } finally {
+          setLoading(false)
+        }
+      } else {
+        setLoading(false)
+      }
+    }
+
+    loadInitialContent()
+  }, [])
 
   const filterVacancies = () => {
     let filtered = vacancies
