@@ -1,16 +1,12 @@
 {
   "crons": [
     {
-      "path": "/api/cron/generate-blog",
-      "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/cron/generate-vacancies",
-      "schedule": "0 18 * * *"
-    },
-    {
       "path": "/api/cron/daily-safety-tips",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/revalidate-cache", 
+      "schedule": "0 */6 * * *"
     }
   ],
   "functions": {

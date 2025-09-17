@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Header } from "@/components/layout/header"
 import { Footer } from "@/components/layout/footer"
 import { CommodityPrices } from "@/components/sections/commodity-prices"
@@ -33,6 +33,51 @@ const categories = ["All", "Technology", "Safety", "Environment", "Commodities",
 export function BlogPageClient({ initialPosts, newsArticles, error: serverError }: BlogPageClientProps) {
   const [selectedCategory, setSelectedCategory] = useState("All")
   const [error, setError] = useState<string | null>(serverError || null)
+  const [refreshing, setRefreshing] = useState(false)
+  const [posts, setPosts] = useState(initialPosts)
+  const [news, setNews] = useState(newsArticles)
+
+  // Auto-refresh content every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      try {
+        console.log('🔄 Auto-refreshing blog content...')
+        const response = await fetch('/api/blog/news-feed', {
+          cache: 'no-store'
+        })
+        if (response.ok) {
+          const freshNews = await response.json()
+          setNews(freshNews)
+          console.log('✅ Blog content refreshed')
+        }
+      } catch (error) {
+        console.error('❌ Auto-refresh failed:', error)
+      }
+    }, 5 * 60 * 1000) // 5 minutes
+
+    return () => clearInterval(interval)
+  }, [])
+
+  // Manual refresh function
+  const handleRefresh = async () => {
+    setRefreshing(true)
+    try {
+      const response = await fetch('/api/blog/news-feed', {
+        cache: 'no-store'
+      })
+      if (response.ok) {
+        const freshNews = await response.json()
+        setNews(freshNews)
+        setError(null)
+      } else {
+        setError('Failed to refresh content')
+      }
+    } catch (error) {
+      setError('Network error occurred')
+    } finally {
+      setRefreshing(false)
+    }
+  }
   
   // Combine Sanity posts with AI-summarized news
   const allPosts = [...initialPosts, ...newsArticles]
