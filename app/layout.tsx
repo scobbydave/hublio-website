@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { FloatingChatWidget } from "@/components/ai/floating-chat-widget"
 import { Analytics } from "@/components/analytics"
+import { Analytics as VercelAnalytics } from "@vercel/analytics/next"
 import { Toaster } from "@/components/ui/toaster"
 import MiningParticles from "@/components/MiningParticles"
 import MiningElevator from "@/components/MiningElevator"
@@ -98,6 +99,7 @@ export default function RootLayout({
             {children}
             <FloatingChatWidget />
             <Analytics />
+            <VercelAnalytics />
             <Toaster />
           </Suspense>
         </ThemeProvider>
