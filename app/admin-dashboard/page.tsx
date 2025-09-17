@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation"
-import { AdminDashboardV2 } from "@/components/admin/v2/admin-dashboard-v2"
+// Update the import path if the file is located elsewhere, for example:
+import { AdminDashboardV2 } from "../../components/admin/v2/admin-dashboard-v2"
 
 interface PageProps {
   searchParams: { key?: string }
