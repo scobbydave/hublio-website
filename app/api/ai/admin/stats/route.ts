@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server"
 import { sanityClient } from "@/lib/sanity"
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(request: Request) {
   try {
     // Simple authentication check
@@ -11,12 +14,21 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    // Fetch stats from Sanity
-    const [faqs, blogPosts, testimonials] = await Promise.all([
-      sanityClient.fetch(`count(*[_type == "faq"])`),
-      sanityClient.fetch(`count(*[_type == "blogPost"])`),
-      sanityClient.fetch(`count(*[_type == "testimonial"])`),
-    ])
+    // Fetch stats from Sanity (with null checks)
+    let faqs = 0, blogPosts = 0, testimonials = 0
+
+    if (sanityClient) {
+      try {
+        [faqs, blogPosts, testimonials] = await Promise.all([
+          sanityClient.fetch(`count(*[_type == "faq"])`),
+          sanityClient.fetch(`count(*[_type == "blogPost"])`),
+          sanityClient.fetch(`count(*[_type == "testimonial"])`),
+        ])
+      } catch (sanityError) {
+        console.log("Sanity fetch error:", sanityError)
+        // Use default values if Sanity fails
+      }
+    }
 
     // Get recent activity (mock data for now - replace with actual logging)
     const recentActivity = [
