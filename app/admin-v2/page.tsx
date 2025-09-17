@@ -7,6 +7,10 @@ interface AdminV2PageProps {
   searchParams: { key?: string }
 }
 
+// Prevent static generation for admin pages
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default function AdminV2Page({ searchParams }: AdminV2PageProps) {
   const { key } = searchParams
 

@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAnalytics } from '@/lib/redis'
 
+// Ensure this API route is always dynamic
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(request: NextRequest) {
   try {
     // Get real data from multiple sources

@@ -5,6 +5,10 @@ interface PageProps {
   searchParams: { key?: string }
 }
 
+// Prevent static generation for admin pages
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default function AdminDashboardPage({ searchParams }: PageProps) {
   const { key } = searchParams
 
